@@ -73,7 +73,7 @@ class SubRouter extends Router {
             }
         }));
 
-        this.get('/item', asyncHandler(async (req, res, next) => {
+        this.get('/items', asyncHandler(async (req, res, next) => {
             const result = await dbHandler.find(collection, {});
             res.send(result);
         }));

@@ -3,7 +3,7 @@
 ## REST-API Tests
 
 Zum Testen der REST-API und der CRUD Funkionalität der Datenbank 
-wurde ![HTTPie](https://httpie.org) verwendet mit folgenden Befehlen.
+wurde [HTTPie](https://httpie.org) verwendet mit folgenden Befehlen.
 
 Create:
 

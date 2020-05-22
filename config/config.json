@@ -1,0 +1,14 @@
+{
+  "service": {
+    "port": 8090,
+    "logFile": "/Users/vagrant/Desktop/crash_log_resolver.log",
+    "storagePath": "G:\\crash_log_resolver"
+  },
+  "db": {
+    "host": "localhost",
+    "port": 27017,
+    "name": "babyphone",
+    "user": "root",
+    "password": "test"
+  }
+}

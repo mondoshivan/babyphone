@@ -21,28 +21,21 @@ const fs = require('fs');
  * Create HTTP server.
  */
 
-let server;
-let port;
-if (process.env['LOCAL_EXECUTION'] === 'true') {
-    port = normalizePort(config.get('service.port'));
-    app.set('port', port);
-    server = http.createServer(app);
-    server.listen(port);
-} else {
-    port = 443;
-    app.set('port', port);
-    const credentials = {
-        key: fs.readFileSync('ssl/privkey.pem'),
-        cert: fs.readFileSync('ssl/fullchain.pem')
-    };
-    server = https.createServer(credentials, app);
-    server.listen(443);
+let port = config.get('service.securePort');
+app.set('port', config.get('service.securePort'));
+const credentials = {
+    key: fs.readFileSync(config.get('service.ssl.key')),
+    cert: fs.readFileSync(config.get('service.ssl.cert'))
+};
 
-    http.createServer(function (req, res) {
-        res.writeHead(301, { "Location": "https://lyra.et-inf.fho-emden.de:15089" + req.url });
-        res.end();
-    }).listen(80);
-}
+let server = https.createServer(credentials, app);
+server.listen(config.get('service.securePort'));
+
+http.createServer(function (req, res) {
+    const url = `https://${config.get('service.host')}:${config.get('service.portForwarding')}${req.url}`;
+    res.writeHead(301, { "Location": url });
+    res.end();
+}).listen(config.get('service.port'));
 
 
 /**

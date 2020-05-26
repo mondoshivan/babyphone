@@ -1,8 +1,15 @@
 {
   "service": {
-    "port": 8090,
+    "host": "lyra.et-inf.fho-emden.de",
+    "port": 80,
+    "securePort": 443,
+    "portForwarding": 15089,
     "logFile": "/Users/vagrant/Desktop/crash_log_resolver.log",
-    "storagePath": "G:\\crash_log_resolver"
+    "storagePath": "G:\\crash_log_resolver",
+    "ssl": {
+      "key": "ssl/privkey.pem",
+      "cert": "ssl/fullchain.pem"
+    }
   },
   "db": {
     "host": "localhost",

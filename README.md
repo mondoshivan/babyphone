@@ -1,5 +1,9 @@
 # Babyphone
 
+## Links
+
+[How to develop and build angular app with node.js](https://medium.com/bb-tutorials-and-thoughts/how-to-develop-and-build-angular-app-with-nodejs-e24c40444421)
+
 ## REST-API Tests
 
 Zum Testen der REST-API und der CRUD Funkionalität der Datenbank 

@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const sassMiddleware = require('node-sass-middleware');
 
-const IndexRouter = require('./routes/index_router');
+const IndexRouter = require('./routes/index_router.js');
 const SettingsRouter = require('./routes/settings_router');
 
 const indexRouter = new IndexRouter();
@@ -34,8 +34,7 @@ app.use(sassMiddleware({
   indentedSyntax: true, // true = .sass and false = .scss
   sourceMap: true
 }));
-app.use(express.static(path.join(__dirname, 'public')));
-
+app.use(express.static(path.join(__dirname, "/angular/dist/angular/")));
 app.use('/', indexRouter);
 
 // catch 404 and forward to error handler

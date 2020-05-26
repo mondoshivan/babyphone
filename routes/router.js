@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const debug = require('debug')('babyphone:index_router');
+const debug = require('debug')('babyphone:router');
 
 class SubRouter extends Router {
 

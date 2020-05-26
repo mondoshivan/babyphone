@@ -1,0 +1,74 @@
+'use strict';
+
+const client = new BinaryClient('ws://localhost:9001');
+
+client.on('open', function() {
+    // for the sake of this example let's put the stream in the window
+    window.Stream = client.createStream();
+};
+
+const recordRTC = null;
+const session = {
+    audio: true,
+    video: false,
+};
+
+function initializeRecorder(stream) {
+    const audioContext = window.AudioContext;
+    const context = new audioContext();
+    const audioInput = context.createMediaStreamSource(stream);
+    const bufferSize = 2048;
+    // create a javascript node
+    const recorder = context.createJavaScriptNode(bufferSize, 1, 1);
+    // specify the processing function
+    recorder.onaudioprocess = recorderProcess;
+    // connect stream to our recorder
+    audioInput.connect(recorder);
+    // connect our recorder to the previous destination
+    recorder.connect(context.destination);
+}
+
+function convertFloat32ToInt16(buffer) {
+    let l = buffer.length;
+    const buf = new Int16Array(l);
+    while (l--) {
+        buf[l] = Math.min(1, buffer[l]) * 0x7fff;
+    }
+    return buf.buffer;
+}
+
+function onError(data) {
+    console.log(data);
+}
+
+function recorderProcess(e) {
+    const left = e.inputBuffer.getChannelData(0);
+    window.Stream.write(convertFloat32ToInt16(left));
+}
+
+async function getMedia(constraints) {
+    let stream = null;
+
+    try {
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
+        const audioContext = window.AudioContext;
+        const context = new audioContext();
+        const audioInput = context.createMediaStreamSource(stream);
+        const bufferSize = 2048;
+        // create a javascript node
+        const recorder = context.createScriptProcessor(bufferSize, 1, 1);
+        // specify the processing function
+        recorder.onaudioprocess = recorderProcess;
+        // connect stream to our recorder
+        audioInput.connect(recorder);
+        // connect our recorder to the previous destination
+        recorder.connect(context.destination);
+    } catch(err) {
+        console.error(err);
+    }
+}
+
+getMedia(session).catch(e => {
+    console.log(e);
+});
+

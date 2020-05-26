@@ -4,24 +4,19 @@ import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 @Component({
-  selector: 'app-root',
+  selector: 'bp-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.sass']
 })
 export class AppComponent implements OnDestroy  {
 
-  constructor(private appService: AppService) {}
+  constructor(private appService: AppService) {
+  }
 
-  title = 'angular';
+  title = 'Babyphone';
   hellos: any[] = [];
 
   destroy$: Subject<boolean> = new Subject<boolean>();
-
-  // getHello() {
-  //   console.log('sending getHello');
-  //   const result = this.appService.getHello();
-  //   console.log(result);
-  // }
 
   getHello() {
     this.appService.getHello().pipe(takeUntil(this.destroy$)).subscribe((hellos: any[]) => {

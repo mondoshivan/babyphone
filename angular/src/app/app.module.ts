@@ -9,6 +9,7 @@ import { VolumeLedListComponent } from './volume-led-list/volume-led-list.compon
 import { VolumeLedComponent } from './volume-led/volume-led.component';
 import { DetectedEventComponent } from './detected-event/detected-event.component';
 import { DetectedEventListComponent } from './detected-event-list/detected-event-list.component';
+import { MicrophoneService } from "./services/microphone.service";
 
 @NgModule({
   declarations: [
@@ -24,7 +25,9 @@ import { DetectedEventListComponent } from './detected-event-list/detected-event
     AppRoutingModule,
     HttpClientModule
   ],
-  providers: [],
+  providers: [
+    { provide: MicrophoneService, useClass: MicrophoneService}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

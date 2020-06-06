@@ -1,5 +1,5 @@
-import { Component, OnDestroy } from '@angular/core';
-import { AppService } from './app.service';
+import {Component, OnDestroy} from '@angular/core';
+import { ApiService } from './services/api.service';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
@@ -10,16 +10,15 @@ import { Subject } from 'rxjs';
 })
 export class AppComponent implements OnDestroy  {
 
-  constructor(private appService: AppService) {
+  constructor(private apiService: ApiService) {
   }
 
   title = 'Babyphone';
   hellos: any[] = [];
-
   destroy$: Subject<boolean> = new Subject<boolean>();
 
   getHello() {
-    this.appService.getHello().pipe(takeUntil(this.destroy$)).subscribe((hellos: any[]) => {
+    this.apiService.getHello().pipe(takeUntil(this.destroy$)).subscribe((hellos: any[]) => {
       this.hellos = hellos;
       console.log("say hello");
       console.log(this.hellos);

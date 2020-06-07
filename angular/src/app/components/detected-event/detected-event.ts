@@ -1,5 +1,7 @@
+
 export class DetectedEvent {
 
+  id: string;
   timestamp: number;
   loudness: number;
 
@@ -7,7 +9,5 @@ export class DetectedEvent {
     this.timestamp = timestamp;
     this.loudness = loudness;
   }
-
-
 
 }

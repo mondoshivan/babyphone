@@ -1,13 +1,13 @@
-import {Component, NgZone, OnDestroy} from '@angular/core';
+import {Component, NgZone, OnDestroy, OnInit} from '@angular/core';
 import {VolumeLed} from "../volume-led/volume-led";
-import {MicrophoneService} from "../services/microphone.service";
+import {MicrophoneService} from "../../services/microphone.service";
 
 @Component({
   selector: 'bp-volume-led-list',
   templateUrl: './volume-led-list.component.html',
   styleUrls: ['./volume-led-list.component.sass']
 })
-export class VolumeLedListComponent implements OnDestroy{
+export class VolumeLedListComponent implements OnInit, OnDestroy{
 
   volume: number;
   volumeLeds: VolumeLed[];
@@ -15,7 +15,9 @@ export class VolumeLedListComponent implements OnDestroy{
   constructor(private zone:NgZone, public microphoneService:MicrophoneService) {
     const volumeLedAmount = 10;
     this.volumeLeds = this.getVolumeLeds(volumeLedAmount);
+  }
 
+  ngOnInit(): void {
     this.microphoneService.subject.subscribe((volume) => {
       this.volume = volume;
       this.colorLEDs(volume);

@@ -24,6 +24,10 @@ class SubRouter extends Router {
             res.send({response: 'hello'});
         });
 
+        this.post('/api/detected-event', (req, res) => {
+            res.send({response: 'hello'});
+        });
+
         this.delete('/item', asyncHandler(async (req, res, next) => {
             const id = req.body.id;
             if (!id) {

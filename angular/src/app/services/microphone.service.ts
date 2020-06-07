@@ -1,26 +1,35 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class MicrophoneService {
 
   subject:BehaviorSubject<number>;
   volume: number;
+  constraints: object;
+  stream: MediaStream;
 
   constructor() {
     this.volume = 0;
+    this.constraints = { audio: true, video: false };
+  }
+
+  enable() {
+    console.log('enabling mic');
     this.subject = new BehaviorSubject<number>(this.volume);
-    const constraints = { audio: true, video: false };
-    this.getMedia(constraints).catch(error => {console.log(error)});
+    this.getMedia(this.constraints).catch(error => {console.log(error)});
+  }
+
+  disable() {
+    console.log('disabling mic');
+    this.stream.getAudioTracks()[0].enabled = false;
+    this.subject = null;
   }
 
   async getMedia(constraints) {
-
-    let stream = null;
-
     try {
-      stream = await navigator.mediaDevices.getUserMedia(constraints);
-      this.volumeProcess(stream);
+      this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+      this.volumeProcess(this.stream);
 
     } catch(err) {
       console.error(err);
@@ -48,7 +57,9 @@ export class MicrophoneService {
         values += (array[i]);
       }
       this.volume = values / length;
-      this.subject.next(this.volume);
+      if (this.subject) {
+        this.subject.next(this.volume);
+      }
     }
   }
 

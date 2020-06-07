@@ -2,6 +2,7 @@ import {Component, OnDestroy} from '@angular/core';
 import { ApiService } from './services/api.service';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import {OnlineOfflineService} from "./services/online-offline.service";
 
 @Component({
   selector: 'bp-root',
@@ -10,7 +11,10 @@ import { Subject } from 'rxjs';
 })
 export class AppComponent implements OnDestroy  {
 
-  constructor(private apiService: ApiService) {
+  constructor(
+    private apiService: ApiService,
+    public readonly onlineOfflineService: OnlineOfflineService) {
+
   }
 
   title = 'Babyphone';

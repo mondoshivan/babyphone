@@ -16,6 +16,9 @@ import { ParentStationComponent } from './components/parent-station/parent-stati
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import {OnlineOfflineService} from "./services/online-offline.service";
 import {DetectedEventService} from "./services/detected-event.service";
+import {HandshakeService} from "./services/handshake.service";
+import { ClientListComponent } from './components/client-list/client-list.component';
+import {ClientComponent} from "./components/client/client.component";
 
 @NgModule({
   declarations: [
@@ -28,7 +31,9 @@ import {DetectedEventService} from "./services/detected-event.service";
     IndexComponent,
     BabyStationComponent,
     ParentStationComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    ClientListComponent,
+    ClientComponent
   ],
   imports: [
     BrowserModule,
@@ -39,7 +44,8 @@ import {DetectedEventService} from "./services/detected-event.service";
   providers: [
     { provide: MicrophoneService, useClass: MicrophoneService },
     { provide: OnlineOfflineService, useClass: OnlineOfflineService },
-    { provide: DetectedEventService, useClass: DetectedEventService}
+    { provide: DetectedEventService, useClass: DetectedEventService},
+    { provide: HandshakeService, useClass: HandshakeService}
   ],
   bootstrap: [AppComponent]
 })

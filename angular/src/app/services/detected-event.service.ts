@@ -5,20 +5,22 @@ import Dexie from "dexie";
 import { UUID } from 'angular2-uuid';
 import {ApiService} from "./api.service";
 import {takeUntil} from "rxjs/operators";
-import {Subject} from "rxjs/index";
+import {Subject} from "rxjs/Rx";
 
 
 @Injectable({ providedIn: 'root' })
 export class DetectedEventService implements OnDestroy{
 
   private detectedEvents: DetectedEvent[] = [];
+  private dbName: string;
   private db: any;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private readonly onlineOfflineService: OnlineOfflineService,
-    private apiService: ApiService
+    private readonly apiService: ApiService
   ) {
+    this.dbName = 'Babyphone';
     this.registerToEvents(onlineOfflineService);
     this.createDatabase();
   }
@@ -29,22 +31,19 @@ export class DetectedEventService implements OnDestroy{
   }
 
   addDetectedEvent(detectedEvent:DetectedEvent) {
-    console.log('adding detected event');
     detectedEvent.id = UUID.UUID();
     this.detectedEvents.push(detectedEvent);
 
     if (this.onlineOfflineService.isOnline) {
-      console.log('sending it to the server');
-      this.sendItem(detectedEvent)
+      this.sendToServer(detectedEvent)
     } else {
-      console.log('storing it locally');
       this.addToIndexedDb(detectedEvent);
     }
   }
 
   destroyAllEvents() {
-    // delete all events on server
     console.log('destroying all events');
+    this.destroyAllDetectedEvents();
     this.detectedEvents = [];
     return this.detectedEvents;
   }
@@ -55,7 +54,7 @@ export class DetectedEventService implements OnDestroy{
 
   private createDatabase() {
     console.log('creating the database');
-    this.db = new Dexie('Babyphone');
+    this.db = new Dexie(this.dbName);
     this.db.version(1).stores({
       detectedEvents: 'id,volume,timestamp'
     });
@@ -73,19 +72,26 @@ export class DetectedEventService implements OnDestroy{
       });
   }
 
-  private async sendItemsFromIndexedDb() {
+  private async sendDetectedEventsFromIndexedDb() {
     console.log('sending all stored events');
     const detectedEvents: DetectedEvent[] = await this.db.detectedEvents.toArray();
 
-    detectedEvents.forEach((item: DetectedEvent) => {
-      this.sendItem(item);
-      this.db.detectedEvents.delete(item.id).then(() => {
-        console.log(`item ${item.id} sent and deleted locally`);
+    detectedEvents.forEach((detectedEvent: DetectedEvent) => {
+      this.sendToServer(detectedEvent);
+      this.db.detectedEvents.delete(detectedEvent.id).then(() => {
+        console.log(`detected event ${detectedEvent.id} sent and deleted locally`);
       });
     });
   }
 
-  private sendItem(detectedEvent: DetectedEvent) {
+  private destroyAllDetectedEvents() {
+    this.apiService.destroyAllDetectedEvents().pipe(takeUntil(this.destroy$)).subscribe((hellos: any[]) => {
+      console.log("say hello");
+      console.log(hellos);
+    });
+  }
+
+  private sendToServer(detectedEvent: DetectedEvent) {
     this.apiService.sendDetectedEvent(detectedEvent).pipe(takeUntil(this.destroy$)).subscribe((hellos: any[]) => {
       console.log("say hello");
       console.log(hellos);
@@ -98,7 +104,10 @@ export class DetectedEventService implements OnDestroy{
         console.log('went online');
         console.log('sending all stored items');
 
-        this.sendItemsFromIndexedDb();
+        this.sendDetectedEventsFromIndexedDb()
+          .catch(error => {
+            console.log(error);
+        });
       } else {
         console.log('went offline, storing in indexdb');
       }

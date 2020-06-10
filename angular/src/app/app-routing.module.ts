@@ -5,8 +5,7 @@ import {ParentStationComponent} from "./components/parent-station/parent-station
 import {NotFoundComponent} from "./components/not-found/not-found.component";
 
 const routes: Routes = [
-  {path: 'index', component: IndexComponent, data: {title: 'Startseite'}}, // Dashboard unter /dashboard
-  {path: '', redirectTo: '/index', pathMatch: 'full'},
+  {path: '', component: IndexComponent, data: {title: 'Startseite'}}, // Dashboard unter /dashboard
   {path: 'baby-station', component: BabyStationComponent, data: {title: 'Über uns'}},
   {path: 'parent-station', component: ParentStationComponent, data: {title: 'Über uns'}},
 

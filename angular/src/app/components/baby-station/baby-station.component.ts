@@ -2,6 +2,9 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MicrophoneService} from "../../services/microphone.service";
 import {DetectedEventService} from "../../services/detected-event.service";
 import {DetectedEvent} from "../detected-event/detected-event";
+import {HandshakeService} from "../../services/handshake.service";
+
+declare const window: any;
 
 @Component({
   selector: 'bp-baby-station',
@@ -11,23 +14,23 @@ import {DetectedEvent} from "../detected-event/detected-event";
 export class BabyStationComponent implements OnInit, OnDestroy {
 
   title: string;
-
   lastDetectedEvent: number;
   durationBetweenEvents: number;
   threshold: number;
 
   constructor(
     private microphoneService:MicrophoneService,
-    private detectedEventService: DetectedEventService
+    private detectedEventService: DetectedEventService,
+    private handshakeService: HandshakeService,
   ) {
     this.threshold = 70;
     this.lastDetectedEvent = 0;
     this.durationBetweenEvents = 1000 * 5;
+    this.handshakeService.reachOut();
   }
 
   ngOnInit(): void {
     this.microphoneService.enable();
-
     this.microphoneService.subject.subscribe((volume) => {
       if (volume < this.threshold) { return; }
       const now = Date.now();
@@ -46,6 +49,7 @@ export class BabyStationComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.microphoneService.subject.unsubscribe();
     this.microphoneService.disable();
+    this.handshakeService.retract();
   }
 
 }

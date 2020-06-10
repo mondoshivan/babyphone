@@ -1,23 +1,32 @@
-import { Component, OnInit } from '@angular/core';
+import {AfterViewInit, Component, QueryList, ViewChild} from '@angular/core';
 import {DetectedEvent} from "../detected-event/detected-event";
 import {DetectedEventService} from "../../services/detected-event.service";
+import {HandshakeService} from "../../services/handshake.service";
+import {ClientListComponent} from "../client-list/client-list.component";
 
 @Component({
   selector: 'bp-parent-station',
   templateUrl: './parent-station.component.html',
   styleUrls: ['./parent-station.component.sass']
 })
-export class ParentStationComponent implements OnInit {
+export class ParentStationComponent implements AfterViewInit {
 
   title: string;
   detectedEvents: DetectedEvent[] = [];
 
-  constructor(private readonly detectedEventService: DetectedEventService) {
+  @ViewChild('clients') clientListComponent: ClientListComponent;
+
+  constructor(
+    private readonly detectedEventService: DetectedEventService,
+    private handshakeService: HandshakeService
+  ) {
 
   }
 
-  ngOnInit(): void {
-    this.detectedEvents = this.detectedEventService.getAllDetectedEvents();
+  ngAfterViewInit() {
+    this.handshakeService.overview((clients) => {
+      this.clientListComponent.clients = clients;
+    });
   }
 
 }

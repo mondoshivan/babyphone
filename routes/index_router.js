@@ -5,7 +5,6 @@ const Duplex = require('stream').Duplex;
 const wav = require('wav');
 const DatabaseHandler = require('../lib/database_handler');
 const dbHandler = new DatabaseHandler();
-const collection = 'Index';
 const debug = require('debug')('babyphone:index_router');
 const path = require('path');
 
@@ -24,10 +23,6 @@ class SubRouter extends Router {
             res.send({response: 'hello'});
         });
 
-        this.post('/api/detected-event', (req, res) => {
-            res.send({response: 'hello'});
-        });
-
         this.delete('/item', asyncHandler(async (req, res, next) => {
             const id = req.body.id;
             if (!id) {
@@ -35,6 +30,7 @@ class SubRouter extends Router {
                 res.send('parameter is missing');
             } else {
                 const params = { id: id };
+                const collection = 'Index';
                 const result = await dbHandler.deleteOne(collection, params);
                 if (!result) {
                     res.status(404);
@@ -55,6 +51,7 @@ class SubRouter extends Router {
             } else {
                 const params = { id: id};
                 const changes = { item: item};
+                const collection = 'Index';
                 const result = await dbHandler.updateOne(collection, params, changes);
                 if (!result) {
                     res.status(404);
@@ -65,32 +62,77 @@ class SubRouter extends Router {
             }
         }));
 
-        this.post('/items', asyncHandler(async (req, res, next) => {
-            const data = req.body.items;
-            if (!data) {
-                res.status(422);
-                res.send('items missing');
+        this.get('/api/clients', asyncHandler(async (req, res, next) => {
+            const clients = await dbHandler.find('Clients', { status: 'available' });
+            res.send(clients);
+        }));
+
+
+        this.put('/api/client/available', asyncHandler(async (req, res, next) => {
+            const clientIp = req.connection.remoteAddress;
+            const client = await dbHandler.findClient(clientIp);
+            const collection = 'Clients';
+            const status = 'available';
+            if (client) {
+                const params = { _id: client._id};
+                const changes = { status: status};
+                const result = await dbHandler.updateOne(collection, params, changes);
+                res.send(result);
             } else {
+                const data = { ip: clientIp, status: status};
                 const result = await dbHandler.insert(collection, data);
                 res.send(result);
             }
         }));
 
-        this.post('/item', asyncHandler(async (req, res, next) => {
-            const item = req.body.item;
-            if (!item) {
+        this.put('/api/client/disabled', asyncHandler(async (req, res, next) => {
+            const clientIp = req.connection.remoteAddress;
+            const client = await dbHandler.findClient(clientIp);
+            const collection = 'Clients';
+            const status = 'disabled';
+            if (client) {
+                const params = { _id: client._id};
+                const changes = { status: status};
+                const result = await dbHandler.updateOne(collection, params, changes);
+                res.send(result);
+            } else {
+                const data = { ip: clientIp, status: status};
+                const result = await dbHandler.insert(collection, data);
+                res.send(result);
+            }
+        }));
+
+        this.post('/api/detected-event', asyncHandler(async (req, res, next) => {
+            const clientIp = req.connection.remoteAddress;
+            const volume = req.body.volume;
+            const timestamp = req.body.timestamp;
+            const client = await dbHandler.findClient(clientIp);
+
+            if (!volume || !timestamp) {
                 res.status(422);
                 res.send('item parameter is missing');
+            } else if (!client) {
+                res.status(400);
+                res.send('client does not exist');
             } else {
-                const data = { item: item};
+                const data = { volume: volume, timestamp: timestamp, client: client._id};
+                const collection = 'DetectedEvents';
                 const result = await dbHandler.insert(collection, data);
                 res.send(result);
             }
         }));
 
-        this.get('/items', asyncHandler(async (req, res, next) => {
-            const result = await dbHandler.find(collection, {});
-            res.send(result);
+        this.get('/api/detected-event/all', asyncHandler(async (req, res, next) => {
+
+            const client = await dbHandler.findClient();
+            if (!client) {
+                const collection = 'DetectedEvents';
+                const result = await dbHandler.find(collection, { _id: client._id });
+                res.send(result);
+            } else {
+                res.status(400);
+                res.send('Client ID does not exist');
+            }
         }));
 
         // const webSocketServer = new WebSocket.Server({ port: 8080 });

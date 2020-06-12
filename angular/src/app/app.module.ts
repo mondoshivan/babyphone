@@ -20,6 +20,7 @@ import {HandshakeService} from "./services/handshake.service";
 import { ClientListComponent } from './components/client-list/client-list.component';
 import {ClientComponent} from "./components/client/client.component";
 import { ConnectionComponent } from './components/connection/connection.component';
+import { OfflineAlarmComponent } from './components/offline-alarm/offline-alarm.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { ConnectionComponent } from './components/connection/connection.componen
     NotFoundComponent,
     ClientListComponent,
     ClientComponent,
-    ConnectionComponent
+    ConnectionComponent,
+    OfflineAlarmComponent
   ],
   imports: [
     BrowserModule,

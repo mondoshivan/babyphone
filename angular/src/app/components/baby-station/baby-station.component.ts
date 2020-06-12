@@ -3,6 +3,7 @@ import {MicrophoneService} from "../../services/microphone.service";
 import {DetectedEventService} from "../../services/detected-event.service";
 import {DetectedEvent} from "../detected-event/detected-event";
 import {HandshakeService} from "../../services/handshake.service";
+import {OnlineOfflineService} from "../../services/online-offline.service";
 
 declare const window: any;
 
@@ -22,11 +23,24 @@ export class BabyStationComponent implements OnInit, OnDestroy {
     private microphoneService:MicrophoneService,
     private detectedEventService: DetectedEventService,
     private handshakeService: HandshakeService,
+    private onlineOfflineService: OnlineOfflineService
   ) {
     this.threshold = 70;
     this.lastDetectedEvent = 0;
     this.durationBetweenEvents = 1000 * 5;
     this.handshakeService.reachOut();
+    this.registerToEvents(onlineOfflineService);
+  }
+
+  private registerToEvents(onlineOfflineService: OnlineOfflineService) {
+    onlineOfflineService.connectionChanged.subscribe(online => {
+      if (online) {
+        this.detectedEventService.sendDetectedEvents().catch(error => { console.log(error); });
+        this.detectedEventService.cleanDBTable().catch(error => { console.log(error); });
+      } else {
+        console.log('went offline, storing locally');
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -50,6 +64,7 @@ export class BabyStationComponent implements OnInit, OnDestroy {
     this.microphoneService.subject.unsubscribe();
     this.microphoneService.disable();
     this.handshakeService.retract();
+    this.detectedEventService.destroyAllEvents();
   }
 
 }

@@ -21,7 +21,6 @@ export class DetectedEventService implements OnDestroy{
     private readonly apiService: ApiService
   ) {
     this.dbName = 'Babyphone';
-    this.registerToEvents(onlineOfflineService);
     this.createDatabase();
   }
 
@@ -35,9 +34,9 @@ export class DetectedEventService implements OnDestroy{
     this.detectedEvents.push(detectedEvent);
 
     if (this.onlineOfflineService.isOnline) {
-      this.sendToServer(detectedEvent)
+      this.sendDetectedEvent(detectedEvent)
     } else {
-      this.addToIndexedDb(detectedEvent);
+      this.addToDb(detectedEvent);
     }
   }
 
@@ -45,10 +44,15 @@ export class DetectedEventService implements OnDestroy{
     console.log('destroying all events');
     this.destroyAllDetectedEvents();
     this.detectedEvents = [];
+    this.cleanDBTable().catch(error => { console.log(error); });
     return this.detectedEvents;
   }
 
-  getAllDetectedEvents() {
+  getDetectedEventsFromServer(clientId:string) {
+    return this.apiService.getDetectedEvents(clientId).pipe(takeUntil(this.destroy$));
+  }
+
+  getDetectedEvents() {
     return this.detectedEvents;
   }
 
@@ -60,7 +64,16 @@ export class DetectedEventService implements OnDestroy{
     });
   }
 
-  private addToIndexedDb(detectedEvent: DetectedEvent) {
+  async cleanDBTable() {
+    const detectedEvents: DetectedEvent[] = await this.db.detectedEvents.toArray();
+    detectedEvents.forEach((detectedEvent: DetectedEvent) => {
+      this.db.detectedEvents.delete(detectedEvent.id).then(() => {
+        console.log(`detected event ${detectedEvent.id} deleted locally`);
+      });
+    });
+  }
+
+  private addToDb(detectedEvent: DetectedEvent) {
     this.db.detectedEvents
       .add(detectedEvent)
       .then(async () => {
@@ -72,18 +85,6 @@ export class DetectedEventService implements OnDestroy{
       });
   }
 
-  private async sendDetectedEventsFromIndexedDb() {
-    console.log('sending all stored events');
-    const detectedEvents: DetectedEvent[] = await this.db.detectedEvents.toArray();
-
-    detectedEvents.forEach((detectedEvent: DetectedEvent) => {
-      this.sendToServer(detectedEvent);
-      this.db.detectedEvents.delete(detectedEvent.id).then(() => {
-        console.log(`detected event ${detectedEvent.id} sent and deleted locally`);
-      });
-    });
-  }
-
   private destroyAllDetectedEvents() {
     this.apiService.destroyAllDetectedEvents().pipe(takeUntil(this.destroy$)).subscribe((hellos: any[]) => {
       console.log("say hello");
@@ -91,26 +92,17 @@ export class DetectedEventService implements OnDestroy{
     });
   }
 
-  private sendToServer(detectedEvent: DetectedEvent) {
+  private sendDetectedEvent(detectedEvent: DetectedEvent) {
     this.apiService.sendDetectedEvent(detectedEvent).pipe(takeUntil(this.destroy$)).subscribe((hellos: any[]) => {
       console.log("say hello");
       console.log(hellos);
     });
   }
 
-  private registerToEvents(onlineOfflineService: OnlineOfflineService) {
-    onlineOfflineService.connectionChanged.subscribe(online => {
-      if (online) {
-        console.log('went online');
-        console.log('sending all stored items');
-
-        this.sendDetectedEventsFromIndexedDb()
-          .catch(error => {
-            console.log(error);
-        });
-      } else {
-        console.log('went offline, storing in indexdb');
-      }
+  async sendDetectedEvents() {
+    const detectedEvents: DetectedEvent[] = await this.db.detectedEvents.toArray();
+    detectedEvents.forEach((detectedEvent: DetectedEvent) => {
+      this.sendDetectedEvent(detectedEvent);
     });
   }
 }

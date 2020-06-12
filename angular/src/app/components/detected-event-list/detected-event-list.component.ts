@@ -1,6 +1,5 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {DetectedEvent} from "../detected-event/detected-event";
-import {MicrophoneService} from "../../services/microphone.service";
 import {DetectedEventService} from "../../services/detected-event.service";
 
 @Component({
@@ -10,14 +9,14 @@ import {DetectedEventService} from "../../services/detected-event.service";
 })
 export class DetectedEventListComponent implements OnInit, OnDestroy {
 
-  detectedEvents: DetectedEvent[] = [];
+  @Input() detectedEvents: DetectedEvent[] = [];
 
   constructor(private detectedEventService: DetectedEventService) {
 
   }
 
   ngOnInit(): void {
-    this.detectedEvents = this.detectedEventService.getAllDetectedEvents();
+    this.detectedEvents = this.detectedEventService.getDetectedEvents();
   }
 
   ngOnDestroy(): void {

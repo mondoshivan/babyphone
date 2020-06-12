@@ -19,6 +19,7 @@ import {DetectedEventService} from "./services/detected-event.service";
 import {HandshakeService} from "./services/handshake.service";
 import { ClientListComponent } from './components/client-list/client-list.component';
 import {ClientComponent} from "./components/client/client.component";
+import { ConnectionComponent } from './components/connection/connection.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import {ClientComponent} from "./components/client/client.component";
     ParentStationComponent,
     NotFoundComponent,
     ClientListComponent,
-    ClientComponent
+    ClientComponent,
+    ConnectionComponent
   ],
   imports: [
     BrowserModule,

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {DetectedEvent} from "../components/detected-event/detected-event";
 
 @Injectable({
@@ -42,6 +42,12 @@ export class ApiService {
   destroyAllDetectedEvents() {
     const url = `${this.rootURL}/detected-event/all`;
     return this.http.delete(url);
+  }
+
+  getDetectedEvents(clientId) {
+    let params = new HttpParams().set("clientId", clientId);
+    const url = `${this.rootURL}/detected-event/all`;
+    return this.http.get(url, { params: params });
   }
 
 }

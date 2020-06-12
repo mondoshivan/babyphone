@@ -1,32 +1,47 @@
-import {AfterViewInit, Component, QueryList, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {DetectedEvent} from "../detected-event/detected-event";
 import {DetectedEventService} from "../../services/detected-event.service";
-import {HandshakeService} from "../../services/handshake.service";
+import {Subscription} from "rxjs/Rx";
+import {ActivatedRoute} from "@angular/router";
 import {ClientListComponent} from "../client-list/client-list.component";
+import {DetectedEventListComponent} from "../detected-event-list/detected-event-list.component";
 
 @Component({
   selector: 'bp-parent-station',
   templateUrl: './parent-station.component.html',
   styleUrls: ['./parent-station.component.sass']
 })
-export class ParentStationComponent implements AfterViewInit {
+export class ParentStationComponent implements OnInit, OnDestroy {
 
   title: string;
   detectedEvents: DetectedEvent[] = [];
+  clientId: string;
+  subscription: Subscription;
 
-  @ViewChild('clients') clientListComponent: ClientListComponent;
+  @ViewChild('detectedEvents') detectedEventList: DetectedEventListComponent;
 
   constructor(
     private readonly detectedEventService: DetectedEventService,
-    private handshakeService: HandshakeService
+    private route: ActivatedRoute
   ) {
 
   }
 
-  ngAfterViewInit() {
-    this.handshakeService.overview((clients) => {
-      this.clientListComponent.clients = clients;
-    });
+  ngOnInit() {
+    this.subscription = this.route.params
+      .subscribe(params => {
+        this.clientId = params['id'] || '';
+        if (this.clientId !== '') {
+          this.detectedEventService.getDetectedEventsFromServer(this.clientId).subscribe((detectedEvents: DetectedEvent[]) => {
+            this.detectedEventList.detectedEvents = detectedEvents === null ? [] : detectedEvents;
+          });
+        }
+      });
+  }
+
+  ngOnDestroy() {
+    this.detectedEventService.destroyAllEvents();
+    this.subscription.unsubscribe();
   }
 
 }

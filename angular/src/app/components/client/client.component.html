@@ -1,4 +1,4 @@
-<div class="client">
+<div class="client" [routerLink]="['/parent-station', client._id]">
   <p>ID: {{client._id}}</p>
   <p>IP: {{client.ip}}</p>
   <p>Status: {{client.status}}</p>

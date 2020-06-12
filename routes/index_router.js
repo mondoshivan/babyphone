@@ -70,7 +70,7 @@ class SubRouter extends Router {
 
         this.put('/api/client/available', asyncHandler(async (req, res, next) => {
             const clientIp = req.connection.remoteAddress;
-            const client = await dbHandler.findClient(clientIp);
+            const client = await dbHandler.findClient({ip: clientIp});
             const collection = 'Clients';
             const status = 'available';
             if (client) {
@@ -87,7 +87,7 @@ class SubRouter extends Router {
 
         this.put('/api/client/disabled', asyncHandler(async (req, res, next) => {
             const clientIp = req.connection.remoteAddress;
-            const client = await dbHandler.findClient(clientIp);
+            const client = await dbHandler.findClient({ip: clientIp});
             const collection = 'Clients';
             const status = 'disabled';
             if (client) {
@@ -106,7 +106,7 @@ class SubRouter extends Router {
             const clientIp = req.connection.remoteAddress;
             const volume = req.body.volume;
             const timestamp = req.body.timestamp;
-            const client = await dbHandler.findClient(clientIp);
+            const client = await dbHandler.findClient({ip: clientIp});
 
             if (!volume || !timestamp) {
                 res.status(422);
@@ -123,11 +123,10 @@ class SubRouter extends Router {
         }));
 
         this.get('/api/detected-event/all', asyncHandler(async (req, res, next) => {
-
-            const client = await dbHandler.findClient();
-            if (!client) {
+            const client = await dbHandler.findClient({ id: req.query.clientId });
+            if (client) {
                 const collection = 'DetectedEvents';
-                const result = await dbHandler.find(collection, { _id: client._id });
+                const result = await dbHandler.find(collection, { client: client._id });
                 res.send(result);
             } else {
                 res.status(400);

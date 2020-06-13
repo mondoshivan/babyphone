@@ -3,10 +3,9 @@ const asyncHandler = require('express-async-handler');
 const WebSocket = require('ws');
 const Duplex = require('stream').Duplex;
 const wav = require('wav');
-const DatabaseHandler = require('../lib/database_handler');
-const dbHandler = new DatabaseHandler();
 const debug = require('debug')('babyphone:index_router');
 const path = require('path');
+const DatabaseHandler = require('../lib/database_handler');
 
 class SubRouter extends Router {
 
@@ -31,6 +30,7 @@ class SubRouter extends Router {
             } else {
                 const params = { id: id };
                 const collection = 'Index';
+                const dbHandler = new DatabaseHandler();
                 const result = await dbHandler.deleteOne(collection, params);
                 if (!result) {
                     res.status(404);
@@ -52,6 +52,7 @@ class SubRouter extends Router {
                 const params = { id: id};
                 const changes = { item: item};
                 const collection = 'Index';
+                const dbHandler = new DatabaseHandler();
                 const result = await dbHandler.updateOne(collection, params, changes);
                 if (!result) {
                     res.status(404);
@@ -63,6 +64,7 @@ class SubRouter extends Router {
         }));
 
         this.get('/api/clients', asyncHandler(async (req, res, next) => {
+            const dbHandler = new DatabaseHandler();
             const clients = await dbHandler.find('Clients', { status: 'available' });
             res.send(clients);
         }));
@@ -70,6 +72,7 @@ class SubRouter extends Router {
 
         this.put('/api/client/available', asyncHandler(async (req, res, next) => {
             const clientIp = req.connection.remoteAddress;
+            const dbHandler = new DatabaseHandler();
             const client = await dbHandler.findClient({ip: clientIp});
             const collection = 'Clients';
             const status = 'available';
@@ -87,6 +90,7 @@ class SubRouter extends Router {
 
         this.put('/api/client/disabled', asyncHandler(async (req, res, next) => {
             const clientIp = req.connection.remoteAddress;
+            const dbHandler = new DatabaseHandler();
             const client = await dbHandler.findClient({ip: clientIp});
             const collection = 'Clients';
             const status = 'disabled';
@@ -106,6 +110,7 @@ class SubRouter extends Router {
             const clientIp = req.connection.remoteAddress;
             const volume = req.body.volume;
             const timestamp = req.body.timestamp;
+            const dbHandler = new DatabaseHandler();
             const client = await dbHandler.findClient({ip: clientIp});
 
             if (!volume || !timestamp) {
@@ -123,6 +128,7 @@ class SubRouter extends Router {
         }));
 
         this.get('/api/detected-event/all', asyncHandler(async (req, res, next) => {
+            const dbHandler = new DatabaseHandler();
             const client = await dbHandler.findClient({ id: req.query.clientId });
             if (client) {
                 const collection = 'DetectedEvents';
@@ -131,6 +137,20 @@ class SubRouter extends Router {
             } else {
                 res.status(400);
                 res.send('Client ID does not exist');
+            }
+        }));
+
+        this.delete('/api/detected-event/all', asyncHandler(async (req, res, next) => {
+            const clientIp = req.connection.remoteAddress;
+            const dbHandler = new DatabaseHandler();
+            const client = await dbHandler.findClient({ip: clientIp});
+            if (client) {
+                const collection = 'DetectedEvents';
+                const result = await dbHandler.deleteMany(collection, { client: client._id });
+                res.send(result);
+            } else {
+                res.status(400);
+                res.send('client does not exist');
             }
         }));
 

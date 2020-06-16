@@ -1,4 +1,4 @@
-import {Injectable, OnDestroy} from '@angular/core';
+import {Injectable, OnDestroy, OnInit} from '@angular/core';
 import { OnlineOfflineService } from './online-offline.service';
 import { DetectedEvent } from "../components/detected-event/detected-event";
 import Dexie from "dexie";
@@ -11,7 +11,7 @@ import {Subject} from "rxjs/Rx";
 @Injectable({ providedIn: 'root' })
 export class DetectedEventService implements OnDestroy{
 
-  private detectedEvents: DetectedEvent[] = [];
+  private synchronizedDetectedEvents: DetectedEvent[] = [];
   private dbName: string;
   private db: any;
   private destroy$: Subject<boolean> = new Subject<boolean>();
@@ -31,49 +31,53 @@ export class DetectedEventService implements OnDestroy{
 
   addDetectedEvent(detectedEvent:DetectedEvent) {
     detectedEvent.id = UUID.UUID();
-    this.detectedEvents.push(detectedEvent);
-
-    if (this.onlineOfflineService.isOnline) {
-      this.sendDetectedEvent(detectedEvent)
+    if (this.onlineOfflineService.online) {
+      this.sendDetectedEventToServer(detectedEvent);
+      this.synchronizedDetectedEvents.push(detectedEvent);
     } else {
-      this.addToDb(detectedEvent);
+      this.insertLocally(detectedEvent);
     }
   }
 
   destroyAllEvents() {
     console.log('destroying all events');
-    this.destroyAllDetectedEvents();
-    this.detectedEvents = [];
-    this.cleanDBTable().catch(error => { console.log(error); });
-    return this.detectedEvents;
+    this.truncateOnServer();
+    this.synchronizedDetectedEvents = [];
+    this.truncateLocally().catch(error => { console.log(error); });
+    return this.synchronizedDetectedEvents;
   }
 
   getDetectedEventsFromServer(clientId:string) {
     return this.apiService.getDetectedEvents(clientId).pipe(takeUntil(this.destroy$));
   }
 
-  getDetectedEvents() {
-    return this.detectedEvents;
+  async getDetectedEvents() {
+    const locally = await this.getDetectedEventsLocally();
+    return this.synchronizedDetectedEvents.concat(locally);
   }
 
   private createDatabase() {
     console.log('creating the database');
     this.db = new Dexie(this.dbName);
     this.db.version(1).stores({
-      detectedEvents: 'id,volume,timestamp'
+      detectedEvents: 'id,volume,timestamp' // todo: ++id remove uuid
     });
   }
 
-  async cleanDBTable() {
+  async truncateLocally() {
     const detectedEvents: DetectedEvent[] = await this.db.detectedEvents.toArray();
     detectedEvents.forEach((detectedEvent: DetectedEvent) => {
-      this.db.detectedEvents.delete(detectedEvent.id).then(() => {
-        console.log(`detected event ${detectedEvent.id} deleted locally`);
-      });
+      this.deleteDetectedEventLocally(detectedEvent);
     });
   }
 
-  private addToDb(detectedEvent: DetectedEvent) {
+  deleteDetectedEventLocally(detectedEvent:DetectedEvent) {
+    this.db.detectedEvents.delete(detectedEvent.id).then(() => {
+      console.log(`detected event ${detectedEvent.id} deleted locally`);
+    });
+  }
+
+  private insertLocally(detectedEvent: DetectedEvent) {
     this.db.detectedEvents
       .add(detectedEvent)
       .then(async () => {
@@ -85,24 +89,32 @@ export class DetectedEventService implements OnDestroy{
       });
   }
 
-  private destroyAllDetectedEvents() {
+  private truncateOnServer() {
     this.apiService.destroyAllDetectedEvents().pipe(takeUntil(this.destroy$)).subscribe((hellos: any[]) => {
       console.log("say hello");
       console.log(hellos);
     });
   }
 
-  private sendDetectedEvent(detectedEvent: DetectedEvent) {
-    this.apiService.sendDetectedEvent(detectedEvent).pipe(takeUntil(this.destroy$)).subscribe((hellos: any[]) => {
-      console.log("say hello");
-      console.log(hellos);
+  private sendDetectedEventToServer(detectedEvent: DetectedEvent) {
+    this.apiService.sendDetectedEvent(detectedEvent).pipe(takeUntil(this.destroy$)).subscribe(() => {
+      console.log('Event send to server:', detectedEvent);
+      this.synchronizedDetectedEvents.push(detectedEvent);
     });
+  }
+
+  async getDetectedEventsLocally() {
+    return await this.db.detectedEvents.toArray();
   }
 
   async sendDetectedEvents() {
     const detectedEvents: DetectedEvent[] = await this.db.detectedEvents.toArray();
+    console.log('handling locally stored events:', detectedEvents);
     detectedEvents.forEach((detectedEvent: DetectedEvent) => {
-      this.sendDetectedEvent(detectedEvent);
+      this.sendDetectedEventToServer(detectedEvent);
+    });
+    detectedEvents.forEach((detectedEvent: DetectedEvent) => {
+      this.deleteDetectedEventLocally(detectedEvent);
     });
   }
 }

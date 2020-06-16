@@ -14,13 +14,17 @@ import { IndexComponent } from './components/index/index.component';
 import { BabyStationComponent } from './components/baby-station/baby-station.component';
 import { ParentStationComponent } from './components/parent-station/parent-station.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
-import {OnlineOfflineService} from "./services/online-offline.service";
-import {DetectedEventService} from "./services/detected-event.service";
-import {HandshakeService} from "./services/handshake.service";
+import { OnlineOfflineService} from "./services/online-offline.service";
+import { DetectedEventService} from "./services/detected-event.service";
+import { HandshakeService} from "./services/handshake.service";
 import { ClientListComponent } from './components/client-list/client-list.component';
-import {ClientComponent} from "./components/client/client.component";
+import { ClientComponent} from "./components/client/client.component";
 import { ConnectionComponent } from './components/connection/connection.component';
 import { OfflineAlarmComponent } from './components/offline-alarm/offline-alarm.component';
+import { StorageService} from "./services/storage-service";
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [
@@ -41,15 +45,19 @@ import { OfflineAlarmComponent } from './components/offline-alarm/offline-alarm.
   ],
   imports: [
     BrowserModule,
+    FormsModule,
+    ReactiveFormsModule,
     appRouting,
-    HttpClientModule
+    HttpClientModule,
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   entryComponents: [AppComponent],
   providers: [
     { provide: MicrophoneService, useClass: MicrophoneService },
     { provide: OnlineOfflineService, useClass: OnlineOfflineService },
-    { provide: DetectedEventService, useClass: DetectedEventService},
-    { provide: HandshakeService, useClass: HandshakeService}
+    { provide: DetectedEventService, useClass: DetectedEventService },
+    { provide: HandshakeService, useClass: HandshakeService },
+    { provide: StorageService, useClass: StorageService }
   ],
   bootstrap: [AppComponent]
 })

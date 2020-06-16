@@ -22,6 +22,11 @@ class SubRouter extends Router {
             res.send({response: 'hello'});
         });
 
+        this.get('/api/ping', (req, res) => {
+            res.status(200);
+            res.send('');
+        });
+
         this.delete('/item', asyncHandler(async (req, res, next) => {
             const id = req.body.id;
             if (!id) {
@@ -69,6 +74,32 @@ class SubRouter extends Router {
             res.send(clients);
         }));
 
+        this.post('/api/client/baby', asyncHandler(async (req, res, next) => {
+            const clientIp = req.connection.remoteAddress;
+            const dbHandler = new DatabaseHandler();
+            const client = await dbHandler.findClient({ip: clientIp});
+            const collection = 'Clients';
+            if (client) {
+                const params = { _id: client._id};
+                const changes = { name: req.body.name, gender: req.body.gender };
+                const result = await dbHandler.updateOne(collection, params, changes);
+                res.send(result);
+            } else {
+                res.status(404);
+                res.send('not found');
+            }
+        }));
+
+        this.get('/api/client/baby', asyncHandler(async (req, res) => {
+            const dbHandler = new DatabaseHandler();
+            const client = await dbHandler.findClient({ id: req.query.clientId });
+            if (client) {
+                res.send(client);
+            } else {
+                res.status(400);
+                res.send('Client ID does not exist');
+            }
+        }));
 
         this.put('/api/client/available', asyncHandler(async (req, res, next) => {
             const clientIp = req.connection.remoteAddress;

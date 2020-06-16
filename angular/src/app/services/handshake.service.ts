@@ -32,6 +32,16 @@ export class HandshakeService implements OnDestroy {
     });
   }
 
+  sendBabyInformation(name: string, gender: string) {
+    this.apiService.clientPostBabyInformation(name, gender).pipe(takeUntil(this.destroy$)).subscribe(() => {
+      console.log('Baby Information is send.');
+    });
+  }
+
+  getBabyInformation(clientId: string) {
+    return this.apiService.clientGetBabyInformation(clientId).pipe(takeUntil(this.destroy$));
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.unsubscribe();

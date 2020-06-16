@@ -1,12 +1,15 @@
 <div class="container">
-  <div class="btn">
-    <button class="btn btn-warning" (click)="getHello()">Get Hello</button>
-  </div>
-
   <p>
-    current status: {{ onlineOfflineService.isOnline ? 'online' :
-    'offline' }}
+    current status: {{ onlineOfflineService.online ? 'online' : 'offline' }}
   </p>
+
+  <button class="button button-primary" (click)="subscribeToNotifications()">
+    Subscribe
+  </button>
+
+  <button class="button button-primary" (click)="sendNotification()">
+    Send Notification
+  </button>
 
   <div class="content">
     <router-outlet></router-outlet>

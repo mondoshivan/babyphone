@@ -6,3 +6,28 @@
 </div>
 
 <bp-volume-led-list></bp-volume-led-list>
+
+<div *ngIf="!babyStationExists">
+  <form [formGroup]="babyStationForm" (ngSubmit)="onBabyStationSubmit(babyStationForm.value)">
+
+    <div>
+      <label for="name">Name</label>
+      <input id="name" type="text" formControlName="name">
+    </div>
+
+    <label>
+      <input type="radio" value="male" formControlName="gender">
+      <span>male</span>
+    </label>
+    <label>
+      <input type="radio" value="female" formControlName="gender">
+      <span>female</span>
+    </label>
+
+    <button class="btn btn-warning" type="submit">Submit</button>
+  </form>
+</div>
+
+<div *ngIf="babyStationExists">
+  <button class="btn btn-warning" (click)="editBabyStation()">Edit</button>
+</div>

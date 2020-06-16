@@ -19,6 +19,7 @@
     "@angular/platform-browser": "~9.1.9",
     "@angular/platform-browser-dynamic": "~9.1.9",
     "@angular/router": "~9.1.9",
+    "@angular/service-worker": "^9.1.11",
     "angular2-uuid": "^1.1.1",
     "bootstrap": "^4.5.0",
     "dexie": "^3.0.1",

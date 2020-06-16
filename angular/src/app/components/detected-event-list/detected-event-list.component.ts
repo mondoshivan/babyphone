@@ -16,11 +16,15 @@ export class DetectedEventListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.detectedEvents = this.detectedEventService.getDetectedEvents();
+    this.detectedEventService.getDetectedEvents()
+      .then(detectedEvents => {
+        this.detectedEvents = detectedEvents;
+      }
+    );
   }
 
   ngOnDestroy(): void {
-    this.detectedEvents = this.detectedEventService.destroyAllEvents();
+    //this.detectedEvents = this.detectedEventService.destroyAllEvents();
   }
 
 }

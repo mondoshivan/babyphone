@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'bp-offline-alarm',
@@ -7,17 +7,22 @@ import {Component, Input, OnInit} from '@angular/core';
 })
 export class OfflineAlarmComponent implements OnInit {
 
-  @Input() alarm: boolean = false;
-  offlineAlarmClasses: object = {};
+  alarm: boolean = false;
+  message: string;
 
-  constructor() {
-    this.offlineAlarmClasses = {
-      active: this.alarm
-    };
+  constructor() {}
+
+  active(message='') {
+    this.alarm = true;
+    this.message = message && message !== '' ? message : '';
   }
 
-  active() {
-    this.alarm = true;
+  noInternet() {
+    this.active('Internet connection is lost');
+  }
+
+  noServer() {
+    this.active('Connection to Server is lost');
   }
 
   inactive() {

@@ -16,6 +16,10 @@ export class ApiService {
     return this.http.get(this.rootURL + '/api/hello');
   }
 
+  ping() {
+    return this.http.get(this.rootURL + '/ping');
+  }
+
   clientAvailable() {
     const url = `${this.rootURL}/client/available`;
     const body = {};
@@ -33,6 +37,18 @@ export class ApiService {
     return this.http.put(url, body);
   }
 
+  clientPostBabyInformation(name: string, gender: string) {
+    const url = `${this.rootURL}/client/baby`;
+    const body = { name: name, gender: gender };
+    return this.http.post(url, body);
+  }
+
+  clientGetBabyInformation(clientId: string) {
+    let params = new HttpParams().set("clientId", clientId);
+    const url = `${this.rootURL}/client/baby`;
+    return this.http.get(url, { params: params });
+  }
+
   sendDetectedEvent(detectedEvent: DetectedEvent) {
     const url = `${this.rootURL}/detected-event`;
     const body = detectedEvent;
@@ -44,10 +60,18 @@ export class ApiService {
     return this.http.delete(url);
   }
 
-  getDetectedEvents(clientId) {
+  getDetectedEvents(clientId: string) {
     let params = new HttpParams().set("clientId", clientId);
     const url = `${this.rootURL}/detected-event/all`;
     return this.http.get(url, { params: params });
+  }
+
+  addPushSubscriber(subscriber:any) {
+    return this.http.post('/api/notifications', subscriber);
+  }
+
+  sendNotification(notification) {
+    return this.http.post('/api/newsletter', notification);
   }
 
 }

@@ -6,6 +6,7 @@ import {ActivatedRoute} from "@angular/router";
 import {DetectedEventListComponent} from "../detected-event-list/detected-event-list.component";
 import {OnlineOfflineService} from "../../services/online-offline.service";
 import {OfflineAlarmComponent} from "../offline-alarm/offline-alarm.component";
+import {HandshakeService} from "../../services/handshake.service";
 
 @Component({
   selector: 'bp-parent-station',
@@ -19,6 +20,8 @@ export class ParentStationComponent implements OnInit, OnDestroy {
   clientId: string;
   subscription: Subscription;
   interval: number;
+  babyName: string;
+  babyGender: string;
 
   @ViewChild('detectedEvents') detectedEventList: DetectedEventListComponent;
   @ViewChild('offlineAlarm') offlineAlarm: OfflineAlarmComponent;
@@ -26,7 +29,8 @@ export class ParentStationComponent implements OnInit, OnDestroy {
   constructor(
     private readonly detectedEventService: DetectedEventService,
     private route: ActivatedRoute,
-    private onlineOfflineService: OnlineOfflineService
+    private onlineOfflineService: OnlineOfflineService,
+    private handshakeService: HandshakeService
   ) {
     this.interval = 1000 * 5;
   }
@@ -47,20 +51,27 @@ export class ParentStationComponent implements OnInit, OnDestroy {
   }
 
   fetch() {
-    if (this.clientId !== '') {
-      if (this.onlineOfflineService.isOnline) {
-        if (this.offlineAlarm) {
-          this.offlineAlarm.alarm = false;
-        }
-        this.detectedEventService.getDetectedEventsFromServer(this.clientId).subscribe((detectedEvents: DetectedEvent[]) => {
-          this.detectedEventList.detectedEvents = detectedEvents === null ? [] : detectedEvents;
-        });
-      } else {
-        if (this.offlineAlarm) {
-          this.offlineAlarm.alarm = true;
-        }
-      }
+    if (this.clientId === '') { return; }
+
+    if (!this.onlineOfflineService.online) {
+      if (this.offlineAlarm) { this.offlineAlarm.noInternet(); }
+      return;
     }
+
+    this.onlineOfflineService.serverOnline().subscribe(() => {
+      if (this.offlineAlarm) { this.offlineAlarm.inactive(); }
+      this.handshakeService.getBabyInformation(this.clientId).subscribe((babyInformation: any) => {
+        this.babyName = babyInformation.name;
+        this.babyGender = babyInformation.gender;
+        console.log('Baby Information:', babyInformation);
+      });
+      this.detectedEventService.getDetectedEventsFromServer(this.clientId).subscribe((detectedEvents: DetectedEvent[]) => {
+        this.detectedEventList.detectedEvents = detectedEvents === null ? [] : detectedEvents;
+      });
+    }, error => {
+      if (this.offlineAlarm) { this.offlineAlarm.noServer(); }
+    });
+
   }
 
 }

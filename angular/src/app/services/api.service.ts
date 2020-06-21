@@ -71,7 +71,7 @@ export class ApiService {
   }
 
   sendNotification(notification) {
-    return this.http.post('/api/newsletter', notification);
+    return this.http.post('/api/notifications/submit', notification);
   }
 
 }

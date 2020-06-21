@@ -3,14 +3,6 @@
     current status: {{ onlineOfflineService.online ? 'online' : 'offline' }}
   </p>
 
-  <button class="button button-primary" (click)="subscribeToNotifications()">
-    Subscribe
-  </button>
-
-  <button class="button button-primary" (click)="sendNotification()">
-    Send Notification
-  </button>
-
   <div class="content">
     <router-outlet></router-outlet>
   </div>

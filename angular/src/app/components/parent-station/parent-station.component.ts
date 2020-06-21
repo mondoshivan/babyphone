@@ -7,6 +7,8 @@ import {DetectedEventListComponent} from "../detected-event-list/detected-event-
 import {OnlineOfflineService} from "../../services/online-offline.service";
 import {OfflineAlarmComponent} from "../offline-alarm/offline-alarm.component";
 import {HandshakeService} from "../../services/handshake.service";
+import {SwPush, SwUpdate} from "@angular/service-worker";
+import {NotificationService} from "../../services/notification.service";
 
 @Component({
   selector: 'bp-parent-station',
@@ -23,6 +25,9 @@ export class ParentStationComponent implements OnInit, OnDestroy {
   babyName: string;
   babyGender: string;
 
+  subscriber: PushSubscription;
+  readonly VAPID_PUBLIC_KEY = "BAhrrCzKYBzAiPwPjaH_kKHh7PrYCCKlEYBIINqnCIgGIBTqo58ciDXXZeo54jSpuDaOVURLKjEXNo3sYl-Tngs";
+
   @ViewChild('detectedEvents') detectedEventList: DetectedEventListComponent;
   @ViewChild('offlineAlarm') offlineAlarm: OfflineAlarmComponent;
 
@@ -30,12 +35,15 @@ export class ParentStationComponent implements OnInit, OnDestroy {
     private readonly detectedEventService: DetectedEventService,
     private route: ActivatedRoute,
     private onlineOfflineService: OnlineOfflineService,
-    private handshakeService: HandshakeService
+    private handshakeService: HandshakeService,
+    private swPush: SwPush,
+    private notificationService: NotificationService
   ) {
     this.interval = 1000 * 5;
   }
 
   ngOnInit() {
+    this.subscribeToNotifications();
     this.subscription = this.route.params
       .subscribe(params => {
         this.clientId = params['id'] || '';
@@ -48,6 +56,22 @@ export class ParentStationComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.detectedEventService.destroyAllEvents();
     this.subscription.unsubscribe();
+  }
+
+  subscribeToNotifications() {
+    this.swPush.requestSubscription({
+      serverPublicKey: this.VAPID_PUBLIC_KEY
+    })
+      .then(subscriber => {
+        this.subscriber = subscriber;
+        console.log("Notification Subscription: ", subscriber);
+
+        this.notificationService.addPushSubscriber(subscriber).subscribe(
+          () => console.log('Sent push subscription object to server.'),
+          err => console.log('Could not send subscription object to server, reason: ', err)
+        );
+      })
+      .catch(err => console.error("Could not subscribe to notifications", err));
   }
 
   fetch() {

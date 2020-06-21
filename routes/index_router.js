@@ -6,6 +6,7 @@ const wav = require('wav');
 const debug = require('debug')('babyphone:index_router');
 const path = require('path');
 const DatabaseHandler = require('../lib/database_handler');
+const NotificationHandler = require('../lib/notification_handler');
 
 class SubRouter extends Router {
 
@@ -128,13 +129,18 @@ class SubRouter extends Router {
             if (client) {
                 const params = { _id: client._id};
                 const changes = { status: status};
-                const result = await dbHandler.updateOne(collection, params, changes);
-                res.send(result);
+                await dbHandler.updateOne(collection, params, changes);
             } else {
                 const data = { ip: clientIp, status: status};
-                const result = await dbHandler.insert(collection, data);
-                res.send(result);
+                await dbHandler.insert(collection, data);
             }
+
+            NotificationHandler.notify('Baby Station closed', '', 'assets/apple-icon-180x180.png')
+                .then(() => res.status(200).json({message: 'Notification sent successfully.'}))
+                .catch(err => {
+                    console.error("Error sending notification, reason: ", err);
+                    res.sendStatus(500);
+                });
         }));
 
         this.post('/api/detected-event', asyncHandler(async (req, res, next) => {
@@ -153,8 +159,14 @@ class SubRouter extends Router {
             } else {
                 const data = { volume: volume, timestamp: timestamp, client: client._id};
                 const collection = 'DetectedEvents';
-                const result = await dbHandler.insert(collection, data);
-                res.send(result);
+                await dbHandler.insert(collection, data);
+
+                NotificationHandler.notify('Baby is awake', '', 'assets/apple-icon-180x180.png')
+                    .then(() => res.status(200).json({message: 'Notification sent successfully.'}))
+                    .catch(err => {
+                        console.error("Error sending notification, reason: ", err);
+                        res.sendStatus(500);
+                    });
             }
         }));
 
@@ -191,6 +203,16 @@ class SubRouter extends Router {
             const collection = 'NotificationSubscriptions';
             const result = await dbHandler.insert(collection, data);
             res.send(result);
+        }));
+
+        this.post('/api/notifications/submit', asyncHandler(async (req, res, next) => {
+            NotificationHandler.notify('Baby is awake', 'some body', 'assets/apple-icon-180x180.png')
+                .then(() => res.status(200).json({message: 'Notification sent successfully.'}))
+                .catch(err => {
+                    console.error("Error sending notification, reason: ", err);
+                    res.sendStatus(500);
+                });
+
         }));
 
         // const webSocketServer = new WebSocket.Server({ port: 8080 });

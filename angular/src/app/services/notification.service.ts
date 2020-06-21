@@ -9,7 +9,7 @@ export class NotificationService {
   }
 
   addPushSubscriber(subscriber) {
-    return this.apiService.addPushSubscriber(subscriber);
+    return this.apiService.addPushSubscriber({subscriber: subscriber});
   }
 
   send(notification) {

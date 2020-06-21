@@ -67,7 +67,7 @@ export class ApiService {
   }
 
   addPushSubscriber(subscriber:any) {
-    return this.http.post('/api/notifications', subscriber);
+    return this.http.post('/api/notifications/subscribe', subscriber);
   }
 
   sendNotification(notification) {

@@ -185,6 +185,14 @@ class SubRouter extends Router {
             }
         }));
 
+        this.post('/api/notifications/subscribe', asyncHandler(async (req, res, next) => {
+            const data = req.body.subscriber;
+            const dbHandler = new DatabaseHandler();
+            const collection = 'NotificationSubscriptions';
+            const result = await dbHandler.insert(collection, data);
+            res.send(result);
+        }));
+
         // const webSocketServer = new WebSocket.Server({ port: 8080 });
         //
         // webSocketServer.on('connection', ws => {

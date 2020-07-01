@@ -52,6 +52,9 @@ export class BabyStationComponent implements OnInit, OnDestroy {
       if (exists) {
         this.getBabyStation().then( babyStation => {
           this.babyStation = babyStation;
+          if (this.onlineOfflineService.online) {
+            this.handshakeService.reachOut();
+          }
         })
       }
     });

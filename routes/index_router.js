@@ -35,7 +35,11 @@ class SubRouter extends Router {
             if (client) {
                 if (PV.name(req.body.name) && PV.gender(req.body.gender)) {
                     const params = { _id: client._id};
-                    const changes = { name: req.body.name, gender: req.body.gender };
+                    const changes = {
+                        name: req.body.name,
+                        gender: req.body.gender,
+                        status: 'available'
+                    };
                     const result = await dbHandler.updateOne(collection, params, changes);
                     res.send(result);
                 } else {

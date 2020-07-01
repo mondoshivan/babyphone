@@ -42,7 +42,7 @@ export class BabyStationComponent implements OnInit, OnDestroy {
 
     this.babyStationForm = this.formBuilder.group({
       name: ['', Validators.pattern("^[a-zA-Z\\s-]+$")],
-      gender: ['', Validators.required, Validators.pattern("^(male|female)$")]
+      gender: ['', Validators.pattern("^(male|female)$")]
     });
     this.db = new Dexie("MyDatabase");
     this.db.version(1).stores({ babyStation: "++id, babyName, gender" });

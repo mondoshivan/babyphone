@@ -6,7 +6,7 @@ import {NotFoundComponent} from "./components/not-found/not-found.component";
 import {ConnectionComponent} from "./components/connection/connection.component";
 
 const routes: Routes = [
-  {path: '', component: IndexComponent, data: {title: 'Startseite'}}, // Dashboard unter /dashboard
+  {path: '', component: IndexComponent}, // Dashboard unter /dashboard
   {path: 'baby-station', component: BabyStationComponent},
   {path: 'parent-station/:id', component: ParentStationComponent},
   {path: 'connection', component: ConnectionComponent},

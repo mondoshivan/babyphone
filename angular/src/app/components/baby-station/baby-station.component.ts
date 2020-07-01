@@ -5,7 +5,8 @@ import {DetectedEvent} from "../detected-event/detected-event";
 import {HandshakeService} from "../../services/handshake.service";
 import {OnlineOfflineService} from "../../services/online-offline.service";
 import Dexie from "dexie";
-import { FormBuilder } from '@angular/forms';
+import {FormBuilder, FormControl, Validators} from '@angular/forms';
+import {HeaderService} from "../../services/header.service";
 
 declare const window: any;
 
@@ -16,7 +17,6 @@ declare const window: any;
 })
 export class BabyStationComponent implements OnInit, OnDestroy {
 
-  title: string;
   babyStation: any;
   babyStationExists: boolean = true;
   lastDetectedEvent: number;
@@ -24,6 +24,7 @@ export class BabyStationComponent implements OnInit, OnDestroy {
   threshold: number;
   db: any;
   babyStationForm;
+  genderToggle: string = 'female';
 
   constructor(
     private microphoneService:MicrophoneService,
@@ -31,6 +32,7 @@ export class BabyStationComponent implements OnInit, OnDestroy {
     private handshakeService: HandshakeService,
     private onlineOfflineService: OnlineOfflineService,
     private formBuilder: FormBuilder,
+    private headerService: HeaderService
   ) {
     this.threshold = 50;
     this.lastDetectedEvent = 0;
@@ -38,7 +40,10 @@ export class BabyStationComponent implements OnInit, OnDestroy {
     this.handshakeService.reachOut();
     this.registerToEvents(onlineOfflineService);
 
-    this.babyStationForm = this.formBuilder.group({ name: '', gender: '' });
+    this.babyStationForm = this.formBuilder.group({
+      name: ['', Validators.pattern("^[a-zA-Z\\s-]+$")],
+      gender: ['', Validators.required, Validators.pattern("^(male|female)$")]
+    });
     this.db = new Dexie("MyDatabase");
     this.db.version(1).stores({ babyStation: "++id, babyName, gender" });
 
@@ -52,19 +57,36 @@ export class BabyStationComponent implements OnInit, OnDestroy {
     });
   }
 
+  getBabyImage() {
+    if (!this.babyStation) { return ''; }
+    return this.babyStation.gender === 'male' ? 'assets/img/boy.png' : 'assets/img/girl.png';
+  }
+
+  get name() {
+    return this.babyStationForm.get('name');
+  }
+
+  get gender() {
+    return this.babyStationForm.get('gender');
+  }
+
+  setGenderToggle(gender) {
+    this.genderToggle = gender;
+  }
+
   ngOnInit(): void {
+    this.headerService.setTitle('Baby Station');
+    this.headerService.setBackButtonLink('/');
     this.setupMicrophone();
     this.detectedEventService.getDetectedEvents()
       .then(detectedEvents => {
         console.log("detectedEvents:", detectedEvents);
       });
-    this.getBabyStation()
-      .then(babyStation => {
-        console.log('babystation', babyStation);
-      });
   }
 
   onBabyStationSubmit(data) {
+    console.log('onBabyStationSubmit');
+    console.log(data);
     this.createBabyStation(data.name, data.gender)
       .then(babyStation => {
         this.babyStation = babyStation;
@@ -122,6 +144,8 @@ export class BabyStationComponent implements OnInit, OnDestroy {
   }
 
   async createBabyStation(name, gender) {
+    console.log('babystation name: ', name);
+    console.log('babystation gender: ', gender);
     return await this.db.babyStation.add({babyName: name, gender: gender});
   }
 

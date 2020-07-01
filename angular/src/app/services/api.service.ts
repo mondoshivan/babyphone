@@ -11,11 +11,6 @@ export class ApiService {
 
   rootURL = '/api';
 
-  getHello() {
-    console.log('getHello');
-    return this.http.get(this.rootURL + '/api/hello');
-  }
-
   ping() {
     return this.http.get(this.rootURL + '/ping');
   }

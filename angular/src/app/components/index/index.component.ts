@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {HeaderService} from "../../services/header.service";
 
 @Component({
   selector: 'bp-index',
@@ -9,9 +10,11 @@ export class IndexComponent implements OnInit {
 
   title: string;
 
-  constructor() { }
+  constructor(private headerService: HeaderService) { }
 
   ngOnInit(): void {
+    this.headerService.setTitle('Baby Phone');
+    this.headerService.setBackButtonLink(null);
   }
 
 }

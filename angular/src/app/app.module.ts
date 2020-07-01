@@ -25,6 +25,9 @@ import { StorageService} from "./services/storage-service";
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
+import { HeaderComponent } from './components/header/header.component';
+import {HeaderService} from "./services/header.service";
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -41,7 +44,8 @@ import { environment } from '../environments/environment';
     ClientListComponent,
     ClientComponent,
     ConnectionComponent,
-    OfflineAlarmComponent
+    OfflineAlarmComponent,
+    HeaderComponent
   ],
   imports: [
     BrowserModule,
@@ -49,7 +53,8 @@ import { environment } from '../environments/environment';
     ReactiveFormsModule,
     appRouting,
     HttpClientModule,
-    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
+    NgbModule
   ],
   entryComponents: [AppComponent],
   providers: [
@@ -57,7 +62,8 @@ import { environment } from '../environments/environment';
     { provide: OnlineOfflineService, useClass: OnlineOfflineService },
     { provide: DetectedEventService, useClass: DetectedEventService },
     { provide: HandshakeService, useClass: HandshakeService },
-    { provide: StorageService, useClass: StorageService }
+    { provide: StorageService, useClass: StorageService },
+    { provide: HeaderService, useClass: HeaderService }
   ],
   bootstrap: [AppComponent]
 })

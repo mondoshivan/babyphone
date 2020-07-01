@@ -3,7 +3,7 @@ import { VolumeLed} from "./volume-led";
 
 @Component({
   selector: 'bp-volume-led',
-  template: '<div class="led" [style.background-color]="led.color"></div>',
+  template: '<div class="led col-sm" [style.background-color]="led.color"></div>',
   styleUrls: ['./volume-led.component.sass']
 })
 export class VolumeLedComponent implements OnInit {

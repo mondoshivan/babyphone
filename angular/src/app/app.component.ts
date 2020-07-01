@@ -16,8 +16,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(
     private swPush: SwPush,
-    private swUpdate: SwUpdate,
-    public readonly onlineOfflineService: OnlineOfflineService,
+    private swUpdate: SwUpdate
   ) {
 
   }

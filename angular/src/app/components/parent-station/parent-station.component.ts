@@ -9,6 +9,7 @@ import {OfflineAlarmComponent} from "../offline-alarm/offline-alarm.component";
 import {HandshakeService} from "../../services/handshake.service";
 import {SwPush, SwUpdate} from "@angular/service-worker";
 import {NotificationService} from "../../services/notification.service";
+import {HeaderService} from "../../services/header.service";
 
 @Component({
   selector: 'bp-parent-station',
@@ -37,12 +38,15 @@ export class ParentStationComponent implements OnInit, OnDestroy {
     private onlineOfflineService: OnlineOfflineService,
     private handshakeService: HandshakeService,
     private swPush: SwPush,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private headerService: HeaderService
   ) {
     this.interval = 1000 * 5;
   }
 
   ngOnInit() {
+    this.headerService.setTitle('Parent Station');
+    this.headerService.setBackButtonLink('/connection');
     this.subscribeToNotifications();
     this.subscription = this.route.params
       .subscribe(params => {
@@ -90,7 +94,7 @@ export class ParentStationComponent implements OnInit, OnDestroy {
         console.log('Baby Information:', babyInformation);
       });
       this.detectedEventService.getDetectedEventsFromServer(this.clientId).subscribe((detectedEvents: DetectedEvent[]) => {
-        this.detectedEventList.detectedEvents = detectedEvents === null ? [] : detectedEvents;
+        this.detectedEventList.detectedEvents = detectedEvents;
       });
     }, error => {
       if (this.offlineAlarm) { this.offlineAlarm.noServer(); }

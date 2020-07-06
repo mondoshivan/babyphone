@@ -25,6 +25,10 @@ export class ParentStationComponent implements OnInit, OnDestroy {
   interval: number;
   babyName: string;
   babyGender: string;
+  awake: boolean = false;
+  awakeTimeout: number = 10000;
+  lastDetectedEventListLength: number = 0;
+  lastDetectedEvent: DetectedEvent = null;
 
   subscriber: PushSubscription;
   readonly VAPID_PUBLIC_KEY = "BAhrrCzKYBzAiPwPjaH_kKHh7PrYCCKlEYBIINqnCIgGIBTqo58ciDXXZeo54jSpuDaOVURLKjEXNo3sYl-Tngs";
@@ -95,11 +99,22 @@ export class ParentStationComponent implements OnInit, OnDestroy {
       });
       this.detectedEventService.getDetectedEventsFromServer(this.clientId).subscribe((detectedEvents: DetectedEvent[]) => {
         this.detectedEventList.detectedEvents = detectedEvents;
+        if (detectedEvents.length != this.lastDetectedEventListLength) {
+          this.lastDetectedEventListLength = detectedEvents.length;
+          const lastEvent = detectedEvents[detectedEvents.length - 1];
+          this.lastDetectedEvent = lastEvent;
+          this.awake = true;
+          setTimeout(() => { if (this.lastDetectedEvent === lastEvent) { this.awake = false; } }, this.awakeTimeout);
+        }
       });
     }, error => {
       if (this.offlineAlarm) { this.offlineAlarm.noServer(); }
     });
 
+  }
+
+  getBabyImage() {
+    return this.awake ? 'assets/img/crying.png' : 'assets/img/sleeping.png';
   }
 
 }

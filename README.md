@@ -32,3 +32,19 @@ Delete:
 ```sh
 http DELETE https://HOST:PORT/item id=SOME_ID
 ```
+
+## Database
+
+```sh
+$ docker exec -it docker_mongo_1 mongo -u root -p test
+```
+
+```sh
+> show dbs
+> use 
+> show collections
+> db.Clients.find().pretty()
+> db.Clients.remove({ _id: ObjectId("5efce21ed274861837018175") }, { justOne: true })
+```
+
+

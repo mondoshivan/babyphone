@@ -4,6 +4,7 @@ const path = require('path');
 const DatabaseHandler = require('../lib/database_handler');
 const NotificationHandler = require('../lib/notification_handler');
 const PV = require('../lib/parameter_validation');
+const debug = require('debug')('babyphone:index_router');
 
 class SubRouter extends Router {
 
@@ -104,7 +105,7 @@ class SubRouter extends Router {
             NotificationHandler.notify('Baby Station closed', '', 'assets/apple-icon-180x180.png')
                 .then(() => res.status(200).json({message: 'Notification sent successfully.'}))
                 .catch(err => {
-                    console.error("Error sending notification, reason: ", err);
+                    debug("Error sending notification, reason: ", err);
                     res.sendStatus(500);
                 });
         }));

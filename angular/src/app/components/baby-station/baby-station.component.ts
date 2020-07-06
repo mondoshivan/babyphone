@@ -34,7 +34,7 @@ export class BabyStationComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private headerService: HeaderService
   ) {
-    this.threshold = 50;
+    this.threshold = 70;
     this.lastDetectedEvent = 0;
     this.durationBetweenEvents = 1000 * 5;
     this.handshakeService.reachOut();

@@ -1,7 +1,3 @@
-<div class="client" [routerLink]="['/parent-station', client._id]">
-  <p>ID: {{client._id}}</p>
-  <p>IP: {{client.ip}}</p>
-  <p>Status: {{client.status}}</p>
-  <p>Gender: {{client.gender}}</p>
-  <p>Name: {{client.name}}</p>
+<div class="client {{client.gender}}" [routerLink]="['/parent-station', client._id]">
+  <h2>{{client.name || 'Baby'}}</h2>
 </div>

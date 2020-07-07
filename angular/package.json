@@ -5,7 +5,8 @@
     "ng": "ng",
     "dev": "ng serve",
     "start": "http-server -c-1 --proxy http://localhost:8090 dist/angular",
-    "build": "ng build --prod",
+    "build": "ng build",
+    "production": "ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"

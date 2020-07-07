@@ -26,6 +26,7 @@ export class ConnectionComponent implements AfterViewInit, OnInit {
   ngOnInit(): void {
     this.headerService.setTitle('Choose a Connection');
     this.headerService.setBackButtonLink('/');
+    this.headerService.setEnableNavbar(false);
   }
 
   ngAfterViewInit() {

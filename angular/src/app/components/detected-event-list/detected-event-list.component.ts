@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {DetectedEvent} from "../detected-event/detected-event";
 import {DetectedEventService} from "../../services/detected-event.service";
 
@@ -7,7 +7,7 @@ import {DetectedEventService} from "../../services/detected-event.service";
   templateUrl: './detected-event-list.component.html',
   styleUrls: ['./detected-event-list.component.sass']
 })
-export class DetectedEventListComponent implements OnInit, OnDestroy {
+export class DetectedEventListComponent implements OnInit {
 
   @Input() detectedEvents: DetectedEvent[] = [];
 
@@ -21,10 +21,6 @@ export class DetectedEventListComponent implements OnInit, OnDestroy {
         this.detectedEvents = detectedEvents;
       }
     );
-  }
-
-  ngOnDestroy(): void {
-    //this.detectedEvents = this.detectedEventService.destroyAllEvents();
   }
 
 }

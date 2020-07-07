@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {DetectedEvent} from "../detected-event/detected-event";
 import {DetectedEventService} from "../../services/detected-event.service";
 import {Subscription} from "rxjs/Rx";
@@ -16,7 +16,7 @@ import {HeaderService} from "../../services/header.service";
   templateUrl: './parent-station.component.html',
   styleUrls: ['./parent-station.component.sass']
 })
-export class ParentStationComponent implements OnInit, OnDestroy {
+export class ParentStationComponent implements OnInit, AfterViewInit, OnDestroy {
 
   title: string;
   detectedEvents: DetectedEvent[] = [];
@@ -33,8 +33,10 @@ export class ParentStationComponent implements OnInit, OnDestroy {
   subscriber: PushSubscription;
   readonly VAPID_PUBLIC_KEY = "BAhrrCzKYBzAiPwPjaH_kKHh7PrYCCKlEYBIINqnCIgGIBTqo58ciDXXZeo54jSpuDaOVURLKjEXNo3sYl-Tngs";
 
-  @ViewChild('detectedEvents') detectedEventList: DetectedEventListComponent;
+  private ctx: CanvasRenderingContext2D;
+
   @ViewChild('offlineAlarm') offlineAlarm: OfflineAlarmComponent;
+  @ViewChild('canvas', {static: false}) canvas: ElementRef;
 
   constructor(
     private readonly detectedEventService: DetectedEventService,
@@ -48,9 +50,14 @@ export class ParentStationComponent implements OnInit, OnDestroy {
     this.interval = 1000 * 5;
   }
 
+  ngAfterViewInit(): void {
+    this.ctx = this.canvas.nativeElement.getContext('2d');
+  }
+
   ngOnInit() {
     this.headerService.setTitle('Parent Station');
     this.headerService.setBackButtonLink('/connection');
+    this.headerService.setEnableNavbar(true);
     this.subscribeToNotifications();
     this.subscription = this.route.params
       .subscribe(params => {
@@ -64,6 +71,16 @@ export class ParentStationComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.detectedEventService.destroyAllEvents();
     this.subscription.unsubscribe();
+  }
+
+  enableAlarmColor(): void {
+    this.ctx.fillStyle = 'red';
+    this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+  }
+
+  disableAlarmColor(): void {
+    this.ctx.fillStyle = 'white';
+    this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
   }
 
   subscribeToNotifications() {
@@ -98,13 +115,18 @@ export class ParentStationComponent implements OnInit, OnDestroy {
         console.log('Baby Information:', babyInformation);
       });
       this.detectedEventService.getDetectedEventsFromServer(this.clientId).subscribe((detectedEvents: DetectedEvent[]) => {
-        this.detectedEventList.detectedEvents = detectedEvents;
         if (detectedEvents.length != this.lastDetectedEventListLength) {
+          this.headerService.setDetectedEvents(detectedEvents);
           this.lastDetectedEventListLength = detectedEvents.length;
           const lastEvent = detectedEvents[detectedEvents.length - 1];
           this.lastDetectedEvent = lastEvent;
           this.awake = true;
-          setTimeout(() => { if (this.lastDetectedEvent === lastEvent) { this.awake = false; } }, this.awakeTimeout);
+          this.enableAlarmColor();
+          setTimeout(() => {
+            if (this.lastDetectedEvent === lastEvent) {
+              this.awake = false;
+              this.disableAlarmColor();
+            }}, this.awakeTimeout);
         }
       });
     }, error => {

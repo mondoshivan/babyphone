@@ -1,8 +1,42 @@
 
 <header class="my-5">
-  <div id="back-button" [class.visible]="backButtonLink">
+
+  <nav *ngIf="navbarEnabled" class="navbar navbar-expand-lg navbar-light bg-light mb-3">
+    <a class="navbar-brand" href="#">Babyphone</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item dropdown active">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Detected Events
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <bp-detected-event-list #detectedEvents></bp-detected-event-list>
+          </div>
+        </li>
+      </ul>
+      <ul class="navbar-nav">
+        <li class="">
+          <span class="ml-2 mt-1">Mic Sensitivity</span>
+          <input
+            type="range"
+            class="custom-range"
+            id="sensitivity"
+            min="0"
+            max="100"
+            value="90"
+            #sense (change)="changeSensitivity(sense.value)">
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div id="back-button" class="container" [class.visible]="backButtonLink">
     <button class="btn btn-warning p-2" routerLink="{{backButtonLink}}">Back</button>
+    <h1 class="text-center">{{title}}</h1>
   </div>
-  <h1 class="text-center">{{title}}</h1>
 </header>
 

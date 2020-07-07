@@ -80,6 +80,7 @@ export class BabyStationComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.headerService.setTitle('Baby Station');
     this.headerService.setBackButtonLink('/');
+    this.headerService.setEnableNavbar(false);
     this.setupMicrophone();
     this.detectedEventService.getDetectedEvents()
       .then(detectedEvents => {

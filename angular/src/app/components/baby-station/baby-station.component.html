@@ -56,13 +56,16 @@
   </div>
 
   <div *ngIf="babyStationExists" class="col-md-12 text-center">
-    <h2>{{babyStation?.babyName}}</h2>
-    <img [src]="getBabyImage()">
-    <button class="btn btn-warning" (click)="editBabyStation()">Edit</button>
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container">
+        <h2>{{babyStation?.babyName}}</h2>
+        <img [src]="getBabyImage()">
+        <button class="btn btn-warning" (click)="editBabyStation()">Edit</button>
+        <div class="row mt-3">
+          <bp-volume-led-list class="w-100"></bp-volume-led-list>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-
-<div *ngIf="babyStationExists" class="row">
-  <bp-volume-led-list class="w-100"></bp-volume-led-list>
-</div>

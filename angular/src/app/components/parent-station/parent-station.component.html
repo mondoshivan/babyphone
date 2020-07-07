@@ -1,9 +1,15 @@
-<bp-offline-alarm #offlineAlarm></bp-offline-alarm>
-<p>Baby {{babyName}} is {{babyGender}}</p>
+<canvas id="canvas-el" #canvas></canvas>
 
-<canvas id="canvas"></canvas>
+<div id="conent">
+  <bp-offline-alarm #offlineAlarm></bp-offline-alarm>
 
-<img [src]="getBabyImage()">
-
-<bp-detected-event-list #detectedEvents></bp-detected-event-list>
+  <div class="jumbotron jumbotron-fluid">
+    <div class="container">
+      <div class="text-center">
+        <img id="baby-image" class="img-fluid" [src]="getBabyImage()">
+        <h2>{{babyName}} is {{awake ? 'awake' : 'sleeping'}}</h2>
+      </div>
+    </div>
+  </div>
+</div>
 

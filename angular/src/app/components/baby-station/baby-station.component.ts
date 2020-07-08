@@ -5,7 +5,7 @@ import {DetectedEvent} from "../detected-event/detected-event";
 import {HandshakeService} from "../../services/handshake.service";
 import {OnlineOfflineService} from "../../services/online-offline.service";
 import Dexie from "dexie";
-import {FormBuilder, FormControl, Validators} from '@angular/forms';
+import {FormBuilder, Validators} from '@angular/forms';
 import {HeaderService} from "../../services/header.service";
 
 declare const window: any;
@@ -34,7 +34,7 @@ export class BabyStationComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private headerService: HeaderService
   ) {
-    this.threshold = 70;
+    this.threshold = 60;
     this.lastDetectedEvent = 0;
     this.durationBetweenEvents = 1000 * 5;
     this.handshakeService.reachOut();
@@ -163,7 +163,7 @@ export class BabyStationComponent implements OnInit, OnDestroy {
 
   getDetectedEvent(timestamp:number, volume:number) {
     this.lastDetectedEvent = timestamp;
-    return new DetectedEvent(this.lastDetectedEvent, volume);
+    return new DetectedEvent(timestamp, volume);
   }
 
 }

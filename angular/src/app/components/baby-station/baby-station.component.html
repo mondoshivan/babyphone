@@ -1,71 +1,74 @@
 
-<div class="row mb-5">
-  <div *ngIf="!babyStationExists" class="col-md-12 text-center">
+<div class="container">
+  <div class="row mb-5">
+    <div *ngIf="!babyStationExists" class="col-md-12 text-center">
 
-    <div *ngIf="name.errors?.pattern" class="pattern-error">
-      Name not valid. Only letters, spaces and dashes allowed.
-    </div>
+      <div *ngIf="name.errors?.pattern" class="pattern-error">
+        Name not valid. Only letters, spaces and dashes allowed.
+      </div>
 
-    <div *ngIf="gender.errors?.pattern" class="pattern-error">
-      Gender not valid. Only female or male allowed.
-    </div>
+      <div *ngIf="gender.errors?.pattern" class="pattern-error">
+        Gender not valid. Only female or male allowed.
+      </div>
 
-    <div class="btn-toolbar w-100" role="toolbar" aria-label="Toolbar with button groups">
-      <form [formGroup]="babyStationForm" (ngSubmit)="onBabyStationSubmit(babyStationForm.value)" class="w-100">
+      <div class="btn-toolbar w-100" role="toolbar" aria-label="Toolbar with button groups">
+        <form [formGroup]="babyStationForm" (ngSubmit)="onBabyStationSubmit(babyStationForm.value)" class="w-100">
 
-        <div class="input-group mb-5">
-          <div class="input-group-prepend">
-            <div class="input-group-text" id="btnGroupAddon">Baby Name</div>
+          <div class="input-group mb-5">
+            <div class="input-group-prepend">
+              <div class="input-group-text" id="btnGroupAddon">Baby Name</div>
+            </div>
+            <input
+              id="name"
+              class="form-control"
+              type="text"
+              formControlName="name"
+              required minlength="2"
+              placeholder=""
+              title="Name of your baby; Letters, Spaces and Dashes allowed"
+              aria-label="Baby Name"
+              aria-describedby="btnGroupAddon">
           </div>
-          <input
-            id="name"
-            class="form-control"
-            type="text"
-            formControlName="name"
-            required minlength="2"
-            placeholder=""
-            title="Name of your baby; Letters, Spaces and Dashes allowed"
-            aria-label="Baby Name"
-            aria-describedby="btnGroupAddon">
-        </div>
 
-        <div class="btn-group btn-group-toggle mb-5 d-block">
-          <label class="btn btn-secondary" (click)="setGenderToggle('female')" [ngClass]="genderToggle === 'female' ? 'active' : ''">
-            <input
-              type="radio"
-              formControlName="gender"
-              value="female"
-              title="Gender is female">
-            Female
-          </label>
-          <label ngbButtonLabel class="btn btn-secondary" (click)="setGenderToggle('male')" [ngClass]="genderToggle === 'male' ? 'active' : ''">
-            <input
-              type="radio"
-              formControlName="gender"
-              value="male"
-              title="Gender is male">
-            Male
-          </label>
-        </div>
+          <div class="btn-group btn-group-toggle mb-5 d-block">
+            <label class="btn btn-secondary" (click)="setGenderToggle('female')" [ngClass]="genderToggle === 'female' ? 'active' : ''">
+              <input
+                type="radio"
+                formControlName="gender"
+                value="female"
+                title="Gender is female">
+              Female
+            </label>
+            <label ngbButtonLabel class="btn btn-secondary" (click)="setGenderToggle('male')" [ngClass]="genderToggle === 'male' ? 'active' : ''">
+              <input
+                type="radio"
+                formControlName="gender"
+                value="male"
+                title="Gender is male">
+              Male
+            </label>
+          </div>
 
-        <div class="btn-group">
-          <button class="btn btn-primary" type="submit" [disabled]="!babyStationForm.valid">Submit</button>
-        </div>
-      </form>
+          <div class="btn-group">
+            <button class="btn btn-primary" type="submit" [disabled]="!babyStationForm.valid">Submit</button>
+          </div>
+        </form>
+      </div>
     </div>
-  </div>
 
-  <div *ngIf="babyStationExists" class="col-md-12 text-center">
-    <div class="jumbotron jumbotron-fluid">
-      <div class="container">
-        <h2>{{babyStation?.babyName}}</h2>
-        <img [src]="getBabyImage()">
-        <button class="btn btn-warning" (click)="editBabyStation()">Edit</button>
-        <div class="row mt-3">
-          <bp-volume-led-list class="w-100"></bp-volume-led-list>
+    <div *ngIf="babyStationExists" class="col-md-12 text-center">
+      <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+          <h2>{{babyStation?.babyName}}</h2>
+          <img [src]="getBabyImage()">
+          <button class="btn btn-warning" (click)="editBabyStation()">Edit</button>
+          <div class="row mt-3">
+            <bp-volume-led-list class="w-100"></bp-volume-led-list>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
 

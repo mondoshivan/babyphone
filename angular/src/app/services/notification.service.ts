@@ -8,8 +8,13 @@ export class NotificationService {
 
   }
 
-  addPushSubscriber(subscriber) {
-    return this.apiService.addPushSubscriber({subscriber: subscriber});
+  addPushSubscriber(data) {
+    return this.apiService.addPushSubscriber(data);
+  }
+
+  removePushSubscriber(clientId) {
+    console.log("removing subscriber", clientId);
+    return this.apiService.removePushSubscriber(clientId);
   }
 
   send(notification) {

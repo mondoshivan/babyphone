@@ -174,11 +174,11 @@ class SubRouter extends Router {
         }));
 
         this.delete('/api/notifications/unsubscribe', asyncHandler(async (req, res, next) => {
-            const clientId = req.body.clientId;
+            const clientId = req.query.clientId;
             if (PV.clientId(clientId)) {
                 const dbHandler = new DatabaseHandler();
                 const collection = 'NotificationSubscriptions';
-                const result = await dbHandler.deleteMany(collection, { clientId: clientId });
+                const result = await dbHandler.deleteMany(collection, { clientId: `${clientId}` });
                 res.send(result);
             } else {
                 res.status(404);
@@ -187,11 +187,12 @@ class SubRouter extends Router {
         }));
 
         this.post('/api/notifications/subscribe', asyncHandler(async (req, res, next) => {
-            const data = req.body.subscriber;
-            if (PV.subscriber(data)) {
+            const subscriber = req.body.subscriber;
+            const clientId = req.body.clientId;
+            if (PV.clientId(clientId) && PV.subscriber(subscriber)) {
                 const dbHandler = new DatabaseHandler();
                 const collection = 'NotificationSubscriptions';
-                const result = await dbHandler.insert(collection, data);
+                const result = await dbHandler.insert(collection, req.body);
                 res.send(result);
             } else {
                 res.status(422);

@@ -28,6 +28,8 @@ import { environment } from '../environments/environment';
 import { HeaderComponent } from './components/header/header.component';
 import {HeaderService} from "./services/header.service";
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import {SoundPlayerService} from "./services/sound-player.service";
+import {CookieService} from "ngx-cookie-service";
 
 @NgModule({
   declarations: [
@@ -63,7 +65,9 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     { provide: DetectedEventService, useClass: DetectedEventService },
     { provide: HandshakeService, useClass: HandshakeService },
     { provide: StorageService, useClass: StorageService },
-    { provide: HeaderService, useClass: HeaderService }
+    { provide: HeaderService, useClass: HeaderService },
+    { provide: SoundPlayerService, useClass: SoundPlayerService },
+    CookieService
   ],
   bootstrap: [AppComponent]
 })

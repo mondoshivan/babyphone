@@ -1,5 +1,5 @@
 
-<header class="my-5">
+<header class="mb-5">
 
   <nav *ngIf="navbarEnabled" class="navbar navbar-expand-lg navbar-light bg-light mb-3">
     <a class="navbar-brand" href="#">Babyphone</a>
@@ -10,11 +10,36 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item dropdown active">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <a class="nav-link dropdown-toggle" href="#" id="detectedEventsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Detected Events
           </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <div class="dropdown-menu" aria-labelledby="detectedEventsDropdown">
             <bp-detected-event-list #detectedEvents></bp-detected-event-list>
+          </div>
+        </li>
+        <li class="nav-item dropdown active">
+          <a class="nav-link dropdown-toggle" href="#" id="alarmSoundDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Alarm Sounds
+          </a>
+          <div class="dropdown-menu" aria-labelledby="alarmSoundDropdown">
+            <a
+              class="dropdown-item"
+              href="javascript:void(0)"
+              [class.active]="activeAlarmSound === soundPlayerService.soundFiles.fogHorn"
+              (click)="setActiveAlarmSound(soundPlayerService.soundFiles.fogHorn)">
+              Fog Horn</a>
+            <a
+              class="dropdown-item"
+              href="javascript:void(0)"
+              [class.active]="activeAlarmSound === soundPlayerService.soundFiles.shipBell"
+              (click)="setActiveAlarmSound(soundPlayerService.soundFiles.shipBell)">
+              Ship Bell</a>
+            <a
+              class="dropdown-item"
+              href="javascript:void(0)"
+              [class.active]="activeAlarmSound === soundPlayerService.soundFiles.siren"
+              (click)="setActiveAlarmSound(soundPlayerService.soundFiles.siren)">
+              Siren</a>
           </div>
         </li>
       </ul>

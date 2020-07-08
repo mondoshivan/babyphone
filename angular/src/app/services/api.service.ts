@@ -61,14 +61,16 @@ export class ApiService {
     return this.http.get(url, { params: params });
   }
 
-  addPushSubscriber(subscriber:any) {
-    return this.http.post('/api/notifications/subscribe', subscriber);
+  addPushSubscriber(data:any) {
+    return this.http.post('/api/notifications/subscribe', data);
   }
 
   removePushSubscriber(clientId:string) {
     const params = new HttpParams().set("clientId", clientId);
     const url = `${this.rootURL}/notifications/unsubscribe`;
-    return this.http.delete(url, { params: params});
+    console.log("url: ", url);
+    console.log(params);
+    return this.http.delete(url, { params: params });
   }
 
   sendNotification(notification) {

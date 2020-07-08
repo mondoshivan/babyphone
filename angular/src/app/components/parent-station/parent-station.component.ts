@@ -3,13 +3,13 @@ import {DetectedEvent} from "../detected-event/detected-event";
 import {DetectedEventService} from "../../services/detected-event.service";
 import {Subscription} from "rxjs/Rx";
 import {ActivatedRoute} from "@angular/router";
-import {DetectedEventListComponent} from "../detected-event-list/detected-event-list.component";
 import {OnlineOfflineService} from "../../services/online-offline.service";
 import {OfflineAlarmComponent} from "../offline-alarm/offline-alarm.component";
 import {HandshakeService} from "../../services/handshake.service";
-import {SwPush, SwUpdate} from "@angular/service-worker";
+import {SwPush} from "@angular/service-worker";
 import {NotificationService} from "../../services/notification.service";
 import {HeaderService} from "../../services/header.service";
+import {SoundPlayerService} from "../../services/sound-player.service";
 
 @Component({
   selector: 'bp-parent-station',
@@ -45,7 +45,8 @@ export class ParentStationComponent implements OnInit, AfterViewInit, OnDestroy 
     private handshakeService: HandshakeService,
     private swPush: SwPush,
     private notificationService: NotificationService,
-    private headerService: HeaderService
+    private headerService: HeaderService,
+    private soundPlayerService: SoundPlayerService
   ) {
     this.interval = 1000 * 5;
   }
@@ -69,8 +70,13 @@ export class ParentStationComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   ngOnDestroy() {
+    console.log("destroying parent station");
     this.detectedEventService.destroyAllEvents();
     this.subscription.unsubscribe();
+    this.notificationService.removePushSubscriber(this.clientId).subscribe(
+      () => console.log('Unsubscribed from notifications.'),
+      err => console.log('Could not send unsubscribe request, reason: ', err)
+    );
   }
 
   enableAlarmColor(): void {
@@ -90,8 +96,11 @@ export class ParentStationComponent implements OnInit, AfterViewInit, OnDestroy 
       .then(subscriber => {
         this.subscriber = subscriber;
         console.log("Notification Subscription: ", subscriber);
-
-        this.notificationService.addPushSubscriber(subscriber).subscribe(
+        const data = {
+          subscriber: subscriber,
+          clientId: this.clientId
+        };
+        this.notificationService.addPushSubscriber(data).subscribe(
           () => console.log('Sent push subscription object to server.'),
           err => console.log('Could not send subscription object to server, reason: ', err)
         );
@@ -121,6 +130,7 @@ export class ParentStationComponent implements OnInit, AfterViewInit, OnDestroy 
           const lastEvent = detectedEvents[detectedEvents.length - 1];
           this.lastDetectedEvent = lastEvent;
           this.awake = true;
+          this.soundPlayerService.play();
           this.enableAlarmColor();
           setTimeout(() => {
             if (this.lastDetectedEvent === lastEvent) {

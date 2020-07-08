@@ -5,6 +5,7 @@ const DatabaseHandler = require('../lib/database_handler');
 const NotificationHandler = require('../lib/notification_handler');
 const PV = require('../lib/parameter_validation');
 const debug = require('debug')('babyphone:index_router');
+const Utils = require('../lib/utils');
 
 class SubRouter extends Router {
 
@@ -123,11 +124,16 @@ class SubRouter extends Router {
                     res.status(400);
                     res.send('client does not exist');
                 } else {
-                    const data = { volume: volume, timestamp: timestamp, client: client._id};
+                    const data = {
+                        volume: volume,
+                        timestamp: timestamp,
+                        date: Utils.getDate(timestamp),
+                        client: client._id
+                    };
                     const collection = 'DetectedEvents';
                     await dbHandler.insert(collection, data);
 
-                    NotificationHandler.notify('Baby is awake', '', 'assets/apple-icon-180x180.png')
+                    NotificationHandler.notify('Baby is awake', '', 'assets/apple-icon-180x180.png', client._id)
                         .then(() => res.status(200).json({message: 'Notification sent successfully.'}))
                         .catch(err => {
                             console.error("Error sending notification, reason: ", err);
@@ -160,6 +166,19 @@ class SubRouter extends Router {
             if (client) {
                 const collection = 'DetectedEvents';
                 const result = await dbHandler.deleteMany(collection, { client: client._id });
+                res.send(result);
+            } else {
+                res.status(404);
+                res.send('client does not exist');
+            }
+        }));
+
+        this.delete('/api/notifications/unsubscribe', asyncHandler(async (req, res, next) => {
+            const clientId = req.body.clientId;
+            if (PV.clientId(clientId)) {
+                const dbHandler = new DatabaseHandler();
+                const collection = 'NotificationSubscriptions';
+                const result = await dbHandler.deleteMany(collection, { clientId: clientId });
                 res.send(result);
             } else {
                 res.status(404);

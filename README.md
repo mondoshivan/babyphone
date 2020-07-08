@@ -45,6 +45,7 @@ $ docker exec -it docker_mongo_1 mongo -u root -p test
 > show collections
 > db.Clients.find().pretty()
 > db.Clients.remove({ _id: ObjectId("5efce21ed274861837018175") }, { justOne: true })
+> db.Clients.remove({ })
 ```
 
 

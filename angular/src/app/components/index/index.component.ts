@@ -15,7 +15,7 @@ export class IndexComponent implements OnInit {
   ngOnInit(): void {
     this.headerService.setTitle('Baby Phone');
     this.headerService.setBackButtonLink(null);
-    this.headerService.setEnableNavbar(true);
+    this.headerService.setEnableNavbar(false);
   }
 
 }

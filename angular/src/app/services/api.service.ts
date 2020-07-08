@@ -39,7 +39,7 @@ export class ApiService {
   }
 
   clientGetBabyInformation(clientId: string) {
-    let params = new HttpParams().set("clientId", clientId);
+    const params = new HttpParams().set("clientId", clientId);
     const url = `${this.rootURL}/client/baby`;
     return this.http.get(url, { params: params });
   }
@@ -56,13 +56,19 @@ export class ApiService {
   }
 
   getDetectedEvents(clientId: string) {
-    let params = new HttpParams().set("clientId", clientId);
+    const params = new HttpParams().set("clientId", clientId);
     const url = `${this.rootURL}/detected-event/all`;
     return this.http.get(url, { params: params });
   }
 
   addPushSubscriber(subscriber:any) {
     return this.http.post('/api/notifications/subscribe', subscriber);
+  }
+
+  removePushSubscriber(clientId:string) {
+    const params = new HttpParams().set("clientId", clientId);
+    const url = `${this.rootURL}/notifications/unsubscribe`;
+    return this.http.delete(url, { params: params});
   }
 
   sendNotification(notification) {

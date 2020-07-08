@@ -40,7 +40,8 @@ class SubRouter extends Router {
                     const changes = {
                         name: req.body.name,
                         gender: req.body.gender,
-                        status: 'available'
+                        status: 'available',
+                        threshold: 70
                     };
                     const result = await dbHandler.updateOne(collection, params, changes);
                     res.send(result);
@@ -85,6 +86,29 @@ class SubRouter extends Router {
                 const data = { ip: clientIp, status: status};
                 const result = await dbHandler.insert(collection, data);
                 res.send(result);
+            }
+        }));
+
+        this.put('/api/client/threshold', asyncHandler(async (req, res, next) => {
+            console.log(req.body);
+            const clientId = req.body.clientId;
+            const threshold = req.body.threshold;
+            if (PV.clientId(clientId) && PV.threshold(threshold)) {
+                const dbHandler = new DatabaseHandler();
+                const client = await dbHandler.findClient({ id: clientId });
+                if (client) {
+                    const params = { _id: client._id};
+                    const changes = { threshold: parseInt(threshold)};
+                    const collection = 'Clients';
+                    const result = await dbHandler.updateOne(collection, params, changes);
+                    res.send(result);
+                } else {
+                    res.status(404);
+                    res.send('client not found');
+                }
+            } else {
+                res.status(422);
+                res.send('invalid parameter');
             }
         }));
 

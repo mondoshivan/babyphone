@@ -63,6 +63,7 @@ export class ParentStationComponent implements OnInit, AfterViewInit, OnDestroy 
     this.subscription = this.route.params
       .subscribe(params => {
         this.clientId = params['id'] || '';
+        this.headerService.setClientId(this.clientId);
         this.fetch();
       });
 
@@ -70,7 +71,6 @@ export class ParentStationComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   ngOnDestroy() {
-    console.log("destroying parent station");
     this.detectedEventService.destroyAllEvents();
     this.subscription.unsubscribe();
     this.notificationService.removePushSubscriber(this.clientId).subscribe(
@@ -113,6 +113,7 @@ export class ParentStationComponent implements OnInit, AfterViewInit, OnDestroy 
 
     if (!this.onlineOfflineService.online) {
       if (this.offlineAlarm) { this.offlineAlarm.noInternet(); }
+      this.soundPlayerService.play();
       return;
     }
 
@@ -121,7 +122,6 @@ export class ParentStationComponent implements OnInit, AfterViewInit, OnDestroy 
       this.handshakeService.getBabyInformation(this.clientId).subscribe((babyInformation: any) => {
         this.babyName = babyInformation.name;
         this.babyGender = babyInformation.gender;
-        console.log('Baby Information:', babyInformation);
       });
       this.detectedEventService.getDetectedEventsFromServer(this.clientId).subscribe((detectedEvents: DetectedEvent[]) => {
         if (detectedEvents.length != this.lastDetectedEventListLength) {
@@ -140,7 +140,10 @@ export class ParentStationComponent implements OnInit, AfterViewInit, OnDestroy 
         }
       });
     }, error => {
-      if (this.offlineAlarm) { this.offlineAlarm.noServer(); }
+      if (this.offlineAlarm) {
+        this.offlineAlarm.noServer();
+        this.soundPlayerService.play();
+      }
     });
 
   }

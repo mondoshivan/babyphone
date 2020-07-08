@@ -32,6 +32,12 @@ export class ApiService {
     return this.http.put(url, body);
   }
 
+  sendVolumeThreshold(volume:number, clientId:string) {
+    const url = `${this.rootURL}/client/threshold`;
+    const body = { threshold: volume, clientId: clientId };
+    return this.http.put(url, body);
+  }
+
   clientPostBabyInformation(name: string, gender: string) {
     const url = `${this.rootURL}/client/baby`;
     const body = { name: name, gender: gender };

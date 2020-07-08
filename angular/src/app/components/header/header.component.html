@@ -8,7 +8,7 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav mr-auto">
+      <ul class="navbar-nav">
         <li class="nav-item dropdown active">
           <a class="nav-link dropdown-toggle" href="#" id="detectedEventsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Detected Events
@@ -17,6 +17,8 @@
             <bp-detected-event-list #detectedEvents></bp-detected-event-list>
           </div>
         </li>
+      </ul>
+      <ul class="navbar-nav mr-auto">
         <li class="nav-item dropdown active">
           <a class="nav-link dropdown-toggle" href="#" id="alarmSoundDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Alarm Sounds
@@ -44,8 +46,8 @@
         </li>
       </ul>
       <ul class="navbar-nav">
-        <li class="">
-          <span class="mt-1">Mic Sensitivity</span>
+        <li>
+          <span class="mt-1">Volume Threshold</span>
           <input
             type="range"
             class="custom-range"
@@ -53,7 +55,7 @@
             min="0"
             max="100"
             value="90"
-            #sense (change)="changeSensitivity(sense.value)">
+            #sense (change)="changeVolumeThreshold(sense.value)">
         </li>
       </ul>
     </div>

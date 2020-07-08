@@ -7,6 +7,7 @@ import {DetectedEvent} from "../components/detected-event/detected-event";
 export class HeaderService {
 
   @Output() title: EventEmitter<any> = new EventEmitter();
+  @Output() clientId: EventEmitter<any> = new EventEmitter();
   @Output() detectedEvents: EventEmitter<any> = new EventEmitter();
   @Output() backButtonLink: EventEmitter<any> = new EventEmitter();
   @Output() navbar: EventEmitter<any> = new EventEmitter();
@@ -15,6 +16,10 @@ export class HeaderService {
 
   setTitle(title: string) {
     this.title.emit(title);
+  }
+
+  setClientId(clientId: string) {
+    this.clientId.emit(clientId);
   }
 
   setEnableNavbar(enable: boolean) {
@@ -27,6 +32,10 @@ export class HeaderService {
 
   getTitle() {
     return this.title;
+  }
+
+  getClientId() {
+    return this.clientId;
   }
 
   getDetectedEvents() {

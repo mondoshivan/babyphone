@@ -2,7 +2,7 @@ import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from
 import {DetectedEvent} from "../detected-event/detected-event";
 import {DetectedEventService} from "../../services/detected-event.service";
 import {Subscription} from "rxjs/Rx";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {OnlineOfflineService} from "../../services/online-offline.service";
 import {OfflineAlarmComponent} from "../offline-alarm/offline-alarm.component";
 import {HandshakeService} from "../../services/handshake.service";
@@ -29,6 +29,7 @@ export class ParentStationComponent implements OnInit, AfterViewInit, OnDestroy 
   awakeTimeout: number = 10000;
   lastDetectedEventListLength: number = 0;
   lastDetectedEvent: DetectedEvent = null;
+  fetchInterval: any;
 
   subscriber: PushSubscription;
   readonly VAPID_PUBLIC_KEY = "BAhrrCzKYBzAiPwPjaH_kKHh7PrYCCKlEYBIINqnCIgGIBTqo58ciDXXZeo54jSpuDaOVURLKjEXNo3sYl-Tngs";
@@ -46,7 +47,8 @@ export class ParentStationComponent implements OnInit, AfterViewInit, OnDestroy 
     private swPush: SwPush,
     private notificationService: NotificationService,
     private headerService: HeaderService,
-    private soundPlayerService: SoundPlayerService
+    private soundPlayerService: SoundPlayerService,
+    private router: Router
   ) {
     this.interval = 1000 * 5;
   }
@@ -67,7 +69,7 @@ export class ParentStationComponent implements OnInit, AfterViewInit, OnDestroy 
         this.fetch();
       });
 
-    setInterval(() => { this.fetch() }, this.interval);
+    this.fetchInterval = setInterval(() => { this.fetch() }, this.interval);
   }
 
   ngOnDestroy() {
@@ -77,6 +79,7 @@ export class ParentStationComponent implements OnInit, AfterViewInit, OnDestroy 
       () => console.log('Unsubscribed from notifications.'),
       err => console.log('Could not send unsubscribe request, reason: ', err)
     );
+    clearInterval(this.fetchInterval);
   }
 
   enableAlarmColor(): void {
@@ -122,6 +125,13 @@ export class ParentStationComponent implements OnInit, AfterViewInit, OnDestroy 
       this.handshakeService.getBabyInformation(this.clientId).subscribe((babyInformation: any) => {
         this.babyName = babyInformation.name;
         this.babyGender = babyInformation.gender;
+        console.log(babyInformation);
+        if (babyInformation.status === 'disabled') {
+          this.router.navigate(['/connection'])
+            .then(()=> { console.log('navigating to connection') })
+            .catch(error => { console.log("error navigating back: ", error)});
+          this.ngOnDestroy();
+        }
       });
       this.detectedEventService.getDetectedEventsFromServer(this.clientId).subscribe((detectedEvents: DetectedEvent[]) => {
         if (detectedEvents.length != this.lastDetectedEventListLength) {

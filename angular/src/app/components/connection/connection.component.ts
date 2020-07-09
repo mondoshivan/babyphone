@@ -13,6 +13,7 @@ import {HeaderService} from "../../services/header.service";
 export class ConnectionComponent implements AfterViewInit, OnInit {
 
   title: string;
+  interval: number = 1000 * 5;
   detectedEvents: DetectedEvent[] = [];
 
   @ViewChild('clients') clientListComponent: ClientListComponent;
@@ -30,6 +31,10 @@ export class ConnectionComponent implements AfterViewInit, OnInit {
   }
 
   ngAfterViewInit() {
+    setInterval(() => { this.getConnections() }, this.interval);
+  }
+
+  getConnections() {
     this.handshakeService.overview((clients) => {
       this.clientListComponent.clients = clients;
     });

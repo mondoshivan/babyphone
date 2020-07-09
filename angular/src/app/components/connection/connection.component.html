@@ -1,1 +1,7 @@
 <bp-client-list #clients></bp-client-list>
+
+<div *ngIf="!clientListComponent || clientListComponent.clients?.length === 0" class="text-center">
+  <h2>No Connection available :-(</h2>
+</div>
+
+

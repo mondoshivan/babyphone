@@ -140,6 +140,9 @@ export class BabyStationComponent implements OnInit, OnDestroy {
   async deleteBabyStation() {
     await this.db.babyStation.clear();
     this.babyStationExists = false;
+    if (this.onlineOfflineService.online) {
+      this.handshakeService.sendBabyInformation('', '');
+    }
   }
 
   async babyStationDoesExist() {

@@ -13,7 +13,7 @@ export class IndexComponent implements OnInit {
   constructor(private headerService: HeaderService) { }
 
   ngOnInit(): void {
-    this.headerService.setTitle('Baby Phone');
+    this.headerService.setTitle('Choose a Station');
     this.headerService.setBackButtonLink(null);
     this.headerService.setEnableNavbar(false);
   }

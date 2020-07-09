@@ -52,8 +52,8 @@ $ docker exec -it docker_mongo_1 mongo -u root -p test
 
 ### Vorbereitung
 
-* Datenbank säubern
 * Babystation destroy
+* Datenbank säubern
 
 ### Fenster Arrangement
 

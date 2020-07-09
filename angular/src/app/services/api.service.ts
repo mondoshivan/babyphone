@@ -74,8 +74,6 @@ export class ApiService {
   removePushSubscriber(clientId:string) {
     const params = new HttpParams().set("clientId", clientId);
     const url = `${this.rootURL}/notifications/unsubscribe`;
-    console.log("url: ", url);
-    console.log(params);
     return this.http.delete(url, { params: params });
   }
 

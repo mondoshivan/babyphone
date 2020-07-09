@@ -49,6 +49,12 @@
                   [class.active]="activeAlarmSound === soundPlayerService.soundFiles.siren"
                   (click)="setActiveAlarmSound(soundPlayerService.soundFiles.siren)">
                   Siren</a>
+                <a
+                  class="dropdown-item"
+                  href="javascript:void(0)"
+                  [class.active]="activeAlarmSound === soundPlayerService.soundFiles.noSound"
+                  (click)="setActiveAlarmSound(soundPlayerService.soundFiles.noSound)">
+                  No Sound</a>
               </div>
             </li>
           </ul>

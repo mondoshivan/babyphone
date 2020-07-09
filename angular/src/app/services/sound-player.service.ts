@@ -11,7 +11,8 @@ export class SoundPlayerService {
   public soundFiles = {
     shipBell: './assets/sound/ship-bell.mp3',
     siren: './assets/sound/siren.mp3',
-    fogHorn: './assets/sound/foghorn.mp3'
+    fogHorn: './assets/sound/foghorn.mp3',
+    noSound: 'no-sound'
   };
   private defaultAlarmSound: string = this.soundFiles.fogHorn;
   private cookieNameAlarmSound: string = 'alarm-sound';
@@ -19,7 +20,9 @@ export class SoundPlayerService {
   constructor(private cookieService: CookieService) { }
 
   public play() {
-    this.playSound(this.getAlarmSound());
+    const sound = this.getAlarmSound();
+    if (sound === this.soundFiles.noSound) { return; }
+    this.playSound(sound);
   }
 
   private getAlarmSound() {

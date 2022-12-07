@@ -15,11 +15,11 @@
   "author": "Oliver-Alexander Schmidt",
   "homepage": "https://github.com/mondoshivan/babyphone#readme",
   "dependencies": {
-    "body-parser": "^1.19.0",
+    "body-parser": "^1.20.1",
     "convict": "^6.0.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
-    "express": "~4.16.1",
+    "express": "~4.18.2",
     "express-async-handler": "^1.1.4",
     "http-errors": "~1.6.3",
     "mongodb": "^3.5.7",
